@@ -9,9 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <!-- Site CSS -->
-    <link href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="http://static.bootcss.com/www/assets/css/site.min.css?v5" rel="stylesheet">
+    <link href="//cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//static.bootcss.com/www/assets/css/site.min.css?v5" rel="stylesheet">
     
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -20,7 +20,7 @@
     <![endif]-->
 
     
-    <link rel="alternate" type="application/rss+xml" title="KOTOMI RSS 页面" href="https://kotomi-rss.com/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="KOTOMI RSS 页面" href="//kotomi-rss.com/rss.xml" />
   </head>
   <body>
       
