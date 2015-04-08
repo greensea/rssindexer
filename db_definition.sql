@@ -32,3 +32,5 @@ ALTER TABLE `b_resource`
 --
 ALTER TABLE `b_resource`
   MODIFY `resource_id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `b_resource` ADD INDEX(`pubDate`);

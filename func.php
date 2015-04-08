@@ -66,7 +66,7 @@ function parse_rss($content) {
 /**
  * 根据给定的关键字搜索资源
  */
-function search($kw) {
+function search($kw, $limit = 100) {
     global $mysqli;
     
     $kw = str_replace('　', ' ', $kw);
@@ -91,7 +91,7 @@ function search($kw) {
         $where = ' WHERE ' . implode(' AND ', $conds);
     }
     
-    $sql = "SELECT * FROM b_resource {$where} ORDER BY resource_id DESC LIMIT 100";
+    $sql = "SELECT * FROM b_resource {$where} ORDER BY pubDate DESC LIMIT ${limit}";
     $result = $mysqli->query($sql);
     if (!$result) {
         die($mysqli->error);

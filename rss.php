@@ -8,6 +8,8 @@ $result = search($kw);
 
 $date = date(DATE_RSS);
 
+header('Content-Type: text/xml');
+
 echo <<<EOF
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
@@ -17,6 +19,7 @@ echo <<<EOF
         <language>zh-cn</language>
         <copyright>版权属于原作者所有，本站仅作索引。</copyright>
         <pubDate>${date}</pubDate>
+
 EOF;
 
 
@@ -35,6 +38,7 @@ foreach ($result as $res) {
             <link>{$res['link']}</link>
             <description><![CDATA[ {$res['description']} ]]></description>
         </item>
+
 EOF;
 }
 
