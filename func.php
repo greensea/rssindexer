@@ -11,9 +11,9 @@ function archive_raw($content) {
         mkdir($dir, 0755, TRUE);
     }
     
-    $path = $dir . sprintf('%.6f', microtime(TRUE)) . '.xml';
+    $path = 'archive/' . $dir . sprintf('%.6f', microtime(TRUE)) . '.xml';
     
-    echo $path;
+    file_put_contents($path, $content);
 }
 
 
@@ -60,4 +60,40 @@ function parse_rss($content) {
     
     return $ret;
 }
+
+
+/**
+ * 根据给定的关键字搜索资源
+ */
+function search($kw) {
+    global $mysqli;
+    
+    $kw = str_replace('　', ' ', $kw);
+    $kw = str_replace('+', ' ', $kw);
+    $kws = explode(' ', $kw);
+    
+    $conds = array();
+    
+    foreach ($kws as $k) {
+        $k = trim($k);
+        $k = mysql_real_escape_string($k);
+        
+        $conds[] = "(title LIKE '%{$k}%' OR description LIKE '%{$k}%')";
+    }
+    
+    $sql = 'SELECT * FROM b_resource WHERE ' . implode(' AND ', $conds) . ' ORDER BY resource_id DESC LIMIT 100';
+    
+    $result = $mysqli->query($sql);
+    if (!$result) {
+        die($mysqli->error);
+    }
+    
+    var_dump($result);
+    
+    $rows = $result->fetch_all(MYSQLI_ASSOC);
+    
+    return $rows;
+}
+
+//var_dump(search('['));
 ?>
