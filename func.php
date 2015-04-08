@@ -77,13 +77,21 @@ function search($kw) {
     
     foreach ($kws as $k) {
         $k = trim($k);
-        $k = mysql_real_escape_string($k);
+        if ($k == '') {
+            continue;
+        }
+        
+        $k = $mysqli->real_escape_string($k);
         
         $conds[] = "(title LIKE '%{$k}%' OR description LIKE '%{$k}%')";
     }
     
-    $sql = 'SELECT * FROM b_resource WHERE ' . implode(' AND ', $conds) . ' ORDER BY resource_id DESC LIMIT 100';
+    $where = '';
+    if (!empty($conds)) {
+        $where = ' WHERE ' . implode(' AND ', $conds);
+    }
     
+    $sql = "SELECT * FROM b_resource {$where} ORDER BY resource_id DESC LIMIT 100";
     $result = $mysqli->query($sql);
     if (!$result) {
         die($mysqli->error);
@@ -96,4 +104,6 @@ function search($kw) {
     
     return $rows;
 }
+
+
 ?>

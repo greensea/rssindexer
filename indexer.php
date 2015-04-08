@@ -9,7 +9,6 @@ $content = NULL;
 $ch = curl_init($RSS_FEED);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 curl_setopt($ch, CURLOPT_ENCODING, ''); 
-curl_setopt($ch, CURLOPT_ACCEPT_ENCODING, 'gzip'); 
 curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.2.4410) Gecko/20110902 Firefox/3.6');
 $content = curl_exec($ch);
 
@@ -46,14 +45,14 @@ foreach ($resources as $res) {
     
     $ctime = time();
     
-    $mysqli->begin_transaction();
+    $mysqli->query('start transaction');
     
     $sql = "SELECT * FROM b_resource WHERE guid='{$guid}' LIMIT 1";
     $result = $mysqli->query($sql);
     
     if ($result->num_rows > 0) {
         echo "{$res['title']} 已存在\n";
-        $mysqli->rollback();
+        $mysqli->query('rollback');
         
         continue;
     }
@@ -67,9 +66,7 @@ foreach ($resources as $res) {
         echo $mysqli->error . "\n";
     }
     
-    $mysqli->commit();
-    
-    
+    $mysqli->query('commit');
 }
 
 echo "索引完成\n";
