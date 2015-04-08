@@ -7,11 +7,12 @@ require_once('header.php');
 function archive_raw($content) {
     $dir = date('Y/m/d/');
     
+    $dir = "archive/${dir}";
     if (!is_dir($dir)) {
         mkdir($dir, 0755, TRUE);
     }
     
-    $path = 'archive/' . $dir . sprintf('%.6f', microtime(TRUE)) . '.xml';
+    $path = $dir . sprintf('%.6f', microtime(TRUE)) . '.xml';
     
     file_put_contents($path, $content);
 }
