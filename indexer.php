@@ -36,13 +36,12 @@ printf("共 %d 个资源\n", count($resources));
 
 
 /// 4. 将资源丢进数据库
-foreach ($resources as $res) {
+foreach ($resources as $res) {    
     
-    
-    $title = mysql_real_escape_string($res['title']);
-    $guid = mysql_real_escape_string($res['guid']);
-    $link = mysql_real_escape_string($res['link']);
-    $description = mysql_real_escape_string($res['description']);
+    $title = $mysqli->real_escape_string($res['title']);
+    $guid = $mysqli->real_escape_string($res['guid']);
+    $link = $mysqli->real_escape_string($res['link']);
+    $description = $mysqli->real_escape_string($res['description']);
     $pubDate = strtotime($res['pubDate']);
     
     $ctime = time();

@@ -89,12 +89,11 @@ function search($kw) {
         die($mysqli->error);
     }
     
-    var_dump($result);
-    
-    $rows = $result->fetch_all(MYSQLI_ASSOC);
+    $rows = array();
+    while ($row = $result->fetch_assoc()) {
+        $rows[] = $row;
+    }
     
     return $rows;
 }
-
-//var_dump(search('['));
 ?>
