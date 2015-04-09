@@ -50,6 +50,18 @@ foreach ($resources as $res) {
     $description = $mysqli->real_escape_string($res['description']);
     $pubDate = strtotime($res['pubDate']);
     
+    $btih = '';
+    $match = array();
+    preg_match('([0-9a-f]{40})', $res['link'], $match);
+    if (!empty($match)) {
+        $btih = $match[0];
+        $btih = $mysqli->real_escape_string($btih);
+    }
+    else {
+        echo "警告：无法从 `{$res['link']}' 中解析出 BTIH\n";
+    }
+    
+    
     $ctime = time();
     
     $mysqli->query('start transaction');
@@ -66,8 +78,8 @@ foreach ($resources as $res) {
 
     echo "保存数据：{$res['title']}\n";
     
-    $sql = "INSERT INTO b_resource(title, guid, link, description, pubDate, ctime)
-            VALUES('${title}', '${guid}', '{$link}', '{$description}', ${pubDate}, ${ctime})";
+    $sql = "INSERT INTO b_resource(title, guid, link, description, btih, pubDate, ctime)
+            VALUES('${title}', '${guid}', '{$link}', '{$description}', '{$btih}', ${pubDate}, ${ctime})";
     $ret = $mysqli->query($sql);
     if ($ret === FALSE) {
         echo $mysqli->error . "\n";

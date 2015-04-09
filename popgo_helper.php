@@ -83,7 +83,7 @@ if (!$content) {
 $btih = $res['btih'];
 if ($btih == '') {
     $match = array();
-    preg_match('([0-9a-f]{32})', $res['link'], $match);
+    preg_match('([0-9a-f]{40})', $res['link'], $match);
     $btih = $match[0];
 }
 

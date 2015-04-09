@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `b_resource` (
   `description` text NOT NULL,
   `magnet` varchar(4096) NOT NULL default '',
   `pubDate` int(11) NOT NULL,
-  `btih` char(32) NOT NULL default '',
+  `btih` char(40) NOT NULL default '',
   `ctime` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

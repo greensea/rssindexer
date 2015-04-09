@@ -99,7 +99,7 @@ else {
                 $link = $res['magnet'];
                 if ($link == '') {
                     $match;
-                    $hash = preg_match('([0-9a-f]{32})', $res['guid'], $match);
+                    $hash = preg_match('([0-9a-f]{40})', $res['guid'], $match);
                     if ($match) {
                         $link = 'magnet:?xt=urn:btih:' . $match[0];
                     }
