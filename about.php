@@ -10,7 +10,7 @@
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
     
     
-    <link rel="alternate" type="application/rss+xml" title="KOTOMI RSS 页面" href="//kotomi-rss.com/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="KOTOMI RSS 页面" href="//moe4sale.in/rss.xml" />
   </head>
   <body>
       
