@@ -76,7 +76,8 @@ else {
         <tr class="info">
             <th>发布时间</th>
             <th>种子名称</th>
-            <th style="width: 3em;">下载</th>
+            <th style="width: 5em;">种子链接</th>
+            <th style="width: 5em;">磁力链接</th>
             <th style="width: 4em;">原页面</th>
         </tr>
     <?php
@@ -87,11 +88,33 @@ else {
             <td><?php echo date('Y-m-d H:i', $res['pubDate']);?></td>
             <td><?php echo htmlspecialchars($res['title']);?></td>
             <td><a href="<?php echo htmlspecialchars($res['guid']);?>">下载</a></td>
+            <td>
+                <?php
+                $link = $res['magnet'];
+                if ($link == '') {
+                    $match;
+                    $hash = preg_match('([0-9a-f]{32})', $res['guid'], $match);
+                    if ($match) {
+                        $link = 'magnet:?xt=urn:btih:' . $match[0];
+                    }
+                }
+                ?>
+                <?php if ($link != '') { ?>
+                    <a href="<?php echo htmlspecialchars($link);?>">链接</a>
+                <?php } else { ?>
+                    暂无
+                <?php } ?>
+            </td>
             <td><a href="<?php echo htmlspecialchars($res['link']);?>">原页面</a></td>
         </tr>
         
     <?php } ?>
     </table>
+
+    <div class="row text-center">
+        本站由这些<del>赞助商</del>有爱人士提供支援：
+        <a href="http://www.moe4sale.com">螺丝岛</a>
+    </div>
 
     <div class="row">
         <div class="col-sm-12 text-center text-muted">页面执行时间：<?php printf('%0.3f', 1000 * (microtime(TRUE) - $__t1));?>ms</div>
