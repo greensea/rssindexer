@@ -93,7 +93,7 @@ else {
         <tr>
             <td><?php echo date('Y-m-d H:i', $res['pubDate']);?></td>
             <td><?php echo htmlspecialchars($res['title']);?></td>
-            <td><a href="<?php echo htmlspecialchars($res['guid']);?>">下载</a></td>
+            <td><a href="<?php echo htmlspecialchars($res['guid']);?>">种子</a></td>
             <td>
                 <?php
                 $link = $res['magnet'];
@@ -106,7 +106,7 @@ else {
                 }
                 ?>
                 <?php if ($link != '') { ?>
-                    <a href="<?php echo htmlspecialchars($link);?>">链接</a>
+                    <a href="<?php echo htmlspecialchars($link);?>">磁力</a>
                 <?php } else { ?>
                     暂无
                 <?php } ?>

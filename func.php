@@ -19,6 +19,22 @@ function archive_raw($content) {
 
 
 /**
+ * 将一个种子文件进行归档
+ */
+function archive_torrent($raw, $btih) {
+    $dir = 'torrent/' . substr($btih, 0, 2) . '/' . substr($btih, 2, 2) . '/';
+    $path = $dir . $btih . '.torrent';
+    
+    if (!is_dir($dir)) {
+        mkdir($dir, 0755, TRUE);
+    }
+    
+    echo "保存种子文件到`{$path}'\n";
+    
+    file_put_contents($path, $raw);
+}
+
+/**
  * 将原始 RSS 数据解析为资源数组
  */
 function parse_rss($content) {

@@ -1,4 +1,11 @@
 <?php
+/**
+ * 该文件应该定期使用 PHP-CLI 运行，建议添加到 CRON 任务中
+ * 
+ * 建议每隔 30 分钟运行一次
+ * 
+ * 该脚本会自动访问 $RSS_FEED，并将 RSS 内存保存到数据库中
+ */
 require_once('header.php');
 
 /// 1. 获取资源
@@ -9,7 +16,7 @@ $content = NULL;
 $ch = curl_init($RSS_FEED);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 curl_setopt($ch, CURLOPT_ENCODING, ''); 
-curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.2.4410) Gecko/20110902 Firefox/3.6');
+curl_setopt($ch, CURLOPT_USERAGENT, $USER_AGENT);
 $content = curl_exec($ch);
 
 if (!$content) {
