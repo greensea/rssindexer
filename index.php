@@ -91,7 +91,7 @@ else {
         
     ?>
         <tr>
-            <td><?php echo date('Y-m-d H:i', $res['pubDate']);?></td>
+            <td><?php echo date('Y-m-d H:i:s', $res['pubDate']);?></td>
             <td><?php echo htmlspecialchars($res['title']);?></td>
             <td><a href="<?php echo htmlspecialchars($res['guid']);?>">种子</a></td>
             <td>

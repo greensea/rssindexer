@@ -55,7 +55,7 @@ $magnet = $mysqli->real_escape_string($magnet);
 $sql = "UPDATE b_resource SET magnet='{$magnet}' WHERE resource_id={$res['resource_id']}";
 $mysqli->query($sql);
 
-echo "已保存 magnet: ${magnet}\n";
+echo "已保存磁力链接: ${magnet}\n";
 
 
 /// 3. 下载 BT 种子文件
