@@ -1,6 +1,12 @@
     <div class="container-fluid text-center">
+        <div class="row">
+        本站资源索引自：<a href="http://share.popgo.org">漫游 BT 发布页</a>
+        </div>
+        
+        <div class="row">
         本站由这些<del>赞助商</del>有爱人士提供支援：
         <a href="http://www.moe4sale.com">螺丝岛</a>
+        </div>
     </div>
 
     <div class="container-fluid">
