@@ -5,20 +5,11 @@
   <head>
     
     <meta charset="utf-8">
-    <title>KOTOMI RSS</title>
+    <title>KOTOMI RSS - Anime RSS 索引站</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <!-- Site CSS -->
-    <link href="//cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-    <link href="//cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="//static.bootcss.com/www/assets/css/site.min.css?v5" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="/assets/js/html5shiv.min.js?v=f3008b4099"></script>
-      <script src="/assets/js/respond.min.js?v=f3008b4099"></script>
-    <![endif]-->
-
     
     <link rel="alternate" type="application/rss+xml" title="KOTOMI RSS 页面" href="//kotomi-rss.com/rss.xml" />
   </head>
@@ -54,7 +45,7 @@ $kw = trim($kw);
 
 $result = array();
 if ($kw == '') {
-    $result = search($kw, 20);
+    $result = search($kw, 50);
 }
 else {
     $result = search($kw, 100);
