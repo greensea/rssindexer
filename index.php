@@ -15,6 +15,8 @@
   </head>
   <body>
       
+      <?php require_once('nav.tpl.php'); ?>
+      
       <div class="container">
         <div class="row">
             <div class="col-sm-12 text-center" style="font-size: 4em;">
@@ -65,11 +67,15 @@ else {
       </div>
 
         
-      <?php if ($kw != '') { ?>
+      <?php
+      $rss_text = 'RSS 订阅';
+      if ($kw != '') {
+          $rss_text = 'RSS 订阅搜索结果';
+      }
+      ?>
       <div class="pull-right">
-        <a href="rss.xml?kw=<?php echo htmlspecialchars(@$_GET['kw']);?>">RSS 订阅搜索结果</a>
+        <a href="rss.xml?kw=<?php echo htmlspecialchars(@$_GET['kw']);?>"><?php echo $rss_text; ?></a>
       </div>
-      <?php } ?>
       
 
     <table class="table table-hover table-bordered">
@@ -78,7 +84,7 @@ else {
             <th>种子名称</th>
             <th style="width: 5em;">种子链接</th>
             <th style="width: 5em;">磁力链接</th>
-            <th style="width: 4em;">原页面</th>
+            <th style="width: 4em;">源页面</th>
         </tr>
     <?php
     foreach ($result as $res) {
@@ -105,7 +111,7 @@ else {
                     暂无
                 <?php } ?>
             </td>
-            <td><a href="<?php echo htmlspecialchars($res['link']);?>">原页面</a></td>
+            <td><a href="<?php echo htmlspecialchars($res['link']);?>">源页面</a></td>
         </tr>
         
     <?php } ?>
