@@ -1,4 +1,6 @@
 <?php
+$__t1 = microtime(TRUE);
+
 if (!file_exists('config.php')) {
     die("缺少 config.php 文件，可以尝试 mv config.sample.php config.php");
 }

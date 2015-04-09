@@ -1,5 +1,7 @@
 <DOCTYPE html>
 <html lang="zh-CN">
+    
+<?php require_once('header.php');?>
 
   <head>
     
@@ -21,6 +23,7 @@
             <h2>起源</h2>
             
             <p>极影发布站的恢复遥遥无期，漫游 RSS 没有搜索功能。为了保证丰衣足食，还是自己搭一个支持搜索的 RSS 站比较靠谱，于是本站就出现了。</p>
+            <p>本站于 2015 年 4 月 9 日开始运行，仅索引了发布时间晚于该日期的资源，早于该日期发布的资源都没有索引。</p>
             
             <h2>资源来源</h2>
             
@@ -35,5 +38,10 @@
             <p>如有疑问或建议可在 <a href="https://m-b.science">Masochist-board</a> 上发贴，也可借助 github 直接与我联系。</p>
         </div>
     </div>
+    
+    <hr />
+    
+    <?php require('footer.tpl.php');?>
+    
     </body>
 </html>
