@@ -1,9 +1,9 @@
-    <div class="row text-center">
+    <div class="container-fluid text-center">
         本站由这些<del>赞助商</del>有爱人士提供支援：
         <a href="http://www.moe4sale.com">螺丝岛</a>
     </div>
 
-    <div class="row">
+    <div class="container-fluid">
         <div class="col-sm-12 text-center text-muted">页面执行时间：<?php printf('%0.3f', 1000 * (microtime(TRUE) - $__t1));?>ms</div>
     </div>
 

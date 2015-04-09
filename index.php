@@ -16,7 +16,7 @@
       
       <?php require_once('nav.tpl.php'); ?>
       
-      <div class="container">
+      <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12 text-center" style="font-size: 4em;">
                 KOTOMI RSS
@@ -27,6 +27,7 @@
         </div>
       </div>
       
+      <div class="container-fluid">
       <form action="" method="get" role="form" style="margin-top: 2em;">
         <div class="form-group">
             <div class="col-sm-5 col-sm-offset-3">
@@ -34,8 +35,8 @@
             </div>
             <button class="btn btn-primary" type="submit">搜索</button>
         </div>
-      
       </form>
+      </div>
 
 
 <?php
@@ -53,7 +54,7 @@ else {
 }
 ?>
         
-      <div class="text-primary text-center text-large" style="font-size: 1.2em;">
+      <div class="container-fluid text-primary text-center text-large" style="font-size: 1.2em;">
       <?php
       if ($kw == '') {
           echo '最新更新的资源列表';
@@ -72,12 +73,11 @@ else {
           $rss_text = 'RSS 订阅搜索结果';
       }
       ?>
-      <div class="container">
-      <div class="pull-right">
+      <div class="container-fluid text-right">
         <a href="rss.xml?kw=<?php echo htmlspecialchars(@$_GET['kw']);?>"><?php echo $rss_text; ?></a>
       </div>
-      </div>
       
+    <div class="container-fluid">
     <table class="table table-hover table-bordered">
         <tr class="info">
             <th>发布时间</th>
@@ -116,7 +116,9 @@ else {
         
     <?php } ?>
     </table>
-
+    </div>
+    
+    
     <?php require('footer.tpl.php'); ?>
 
     </body>
