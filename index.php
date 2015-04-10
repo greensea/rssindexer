@@ -74,9 +74,11 @@ else {
       }
       ?>
       <div class="container-fluid text-right">
-        <a href="rss.xml?kw=<?php echo htmlspecialchars(@$_GET['kw']);?>"><?php echo $rss_text; ?></a>
+        <a href="rss.xml<?php echo ($kw == '') ? '' : '?kw=' . htmlspecialchars($kw); ?>">
+		<i class="glyphicon glyphicon-signal"></i>
+		<?php echo $rss_text; ?>
+	</a>
       </div>
-      
     <div class="container-fluid">
     <table class="table table-hover table-bordered">
         <tr class="info">
