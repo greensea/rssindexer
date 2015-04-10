@@ -100,7 +100,7 @@ function search($kw, $limit = 100) {
         $k = $mysqli->real_escape_string($k);
         
         //$conds[] = "(title LIKE '%{$k}%' OR description LIKE '%{$k}%')";
-        $conds[] = "(title LIKE '%{$k}%'')";
+        $conds[] = "(title LIKE '%{$k}%')";
     }
     
     $where = '';
