@@ -1,0 +1,31 @@
+.beta {
+    font-size: 0.5em;
+    transform: rotate(-10deg);
+    display: inline-block;
+}
+
+.head-title {
+    font-size: 4em;
+}
+.head-subtitle {
+    color: #888;
+    font-size: 1.5em;
+}
+
+table th {
+    text-align: center;
+}
+
+
+.resources .guid {
+    min-width: 6em;
+    text-align: center;
+}
+.resources .link {
+    min-width: 6em;
+    text-align: center;
+}
+.resources .source {
+    min-width: 5em;
+    text-align: center;
+}

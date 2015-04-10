@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-    
+    <link href="css/index.css" rel="stylesheet">
     
     <link rel="alternate" type="application/rss+xml" title="KOTOMI RSS 页面" href="//moe4sale.in/rss.xml" />
   </head>
@@ -18,10 +18,11 @@
       
       <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-12 text-center" style="font-size: 4em;">
+            <div class="col-sm-12 text-center head-title">
                 KOTOMI RSS
+                <sup class="text-muted beta">BETA</sup>
             </div>
-            <div class="col-sm-12 text-center" style="color: #888; font-size: 1.5em;">
+            <div class="col-sm-12 text-center head-subtitle">
                 Anime RSS 索引站
             </div>
         </div>
@@ -80,7 +81,7 @@ else {
 	</a>
       </div>
     <div class="container-fluid">
-    <table class="table table-hover table-bordered">
+    <table class="table table-hover table-bordered resources">
         <tr class="info">
             <th>发布时间</th>
             <th>种子名称</th>
@@ -93,10 +94,10 @@ else {
         
     ?>
         <tr>
-            <td><?php echo date('Y-m-d H:i:s', $res['pubDate']);?></td>
+            <td class="pubDate"><?php echo date('Y-m-d H:i:s', $res['pubDate']);?></td>
             <td><?php echo htmlspecialchars($res['title']);?></td>
-            <td><a href="<?php echo htmlspecialchars($res['guid']);?>">种子</a></td>
-            <td>
+            <td class="guid"><a href="<?php echo htmlspecialchars($res['guid']);?>">种子</a></td>
+            <td class="link">
                 <?php
                 $link = $res['magnet'];
                 if ($link == '') {
@@ -113,7 +114,7 @@ else {
                     暂无
                 <?php } ?>
             </td>
-            <td><a href="<?php echo htmlspecialchars($res['link']);?>">源页面</a></td>
+            <td class="source"><a href="<?php echo htmlspecialchars($res['link']);?>">源页面</a></td>
         </tr>
         
     <?php } ?>
