@@ -9,7 +9,7 @@
 require_once('header.php');
 
 /// 1. 获取资源
-echo "正在获取 $RSS_FEED\n";
+LOGI("正在获取 $RSS_FEED");
 
 $content = NULL;
 
@@ -20,25 +20,27 @@ curl_setopt($ch, CURLOPT_USERAGENT, $USER_AGENT);
 $content = curl_exec($ch);
 
 if (!$content) {
-    die("无法抓取 RSS：`${RSS_FEED}'");
+    LOGE("无法抓取 RSS：`${RSS_FEED}'");
+    die('');
 }
 
 
 /// 2. 归档原始数据
-echo "正在归档数据\n";
+LOGI("正在归档数据");
 
 archive_raw($content);
 
 
 /// 3. 解析资源
-echo "正在解析资源\n";
+LOGI("正在解析资源\n");
 
 $resources = parse_rss($content);
 if (!$resources) {
-    die('无法解析 RSS 资源：' . $content);
+    LOGE('无法解析 RSS 资源：' . $content);
+    die('');
 }
 
-printf("共 %d 个资源\n", count($resources));
+LOGI("共 %d 个资源", count($resources));
 
 
 /// 4. 将资源丢进数据库
@@ -58,7 +60,7 @@ foreach ($resources as $res) {
         $btih = $mysqli->real_escape_string($btih);
     }
     else {
-        echo "警告：无法从 `{$res['link']}' 中解析出 BTIH\n";
+        LOGW("警告：无法从 `{$res['link']}' 中解析出 BTIH");
     }
     
     
@@ -70,13 +72,13 @@ foreach ($resources as $res) {
     $result = $mysqli->query($sql);
     
     if ($result->num_rows > 0) {
-        echo "{$res['title']} 已存在\n";
+        LOGI("{$res['title']} 已存在");
         $mysqli->query('rollback');
         
         continue;
     }
 
-    echo "保存数据：{$res['title']}\n";
+    LOGI("保存数据：{$res['title']}");
     
     $sql = "INSERT INTO b_resource(title, guid, link, description, btih, pubDate, ctime)
             VALUES('${title}', '${guid}', '{$link}', '{$description}', '{$btih}', ${pubDate}, ${ctime})";
@@ -88,6 +90,6 @@ foreach ($resources as $res) {
     $mysqli->query('commit');
 }
 
-echo "索引完成\n";
+LOGI("索引完成");
 
 ?>
