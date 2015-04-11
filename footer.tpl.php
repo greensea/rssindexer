@@ -5,7 +5,7 @@
         
         <div class="row">
         本站由这些<del>赞助商</del>有爱人士提供支援：
-        <a href="http://www.moe4sale.com">螺丝岛</a>
+        <a href="https://m-b.science/">麻痹科学网</a>
         </div>
     </div>
 
