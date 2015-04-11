@@ -11,14 +11,22 @@
 require_once('header.php');
 
 /// 1. 获取未填补的资源
+/// 临时性修改，因为我们索引了 POPGO 所有的历史资源，为了保证能够及时补充最新资源的信息，这里会随机查询最新的资源和查询随机资源
 $sql = "SELECT * FROM b_resource WHERE magnet='' AND link LIKE '%popgo%' ORDER BY rand() LIMIT 1";
+if (rand() % 100 > 20) {
+    /// 100 次中有 20 次（1/5）查询最新资源
+    $sql = "SELECT * FROM b_resource WHERE magnet='' AND link LIKE '%popgo%' ORDER BY pubDate DESC LIMIT 1";
+}
+
 $result = $mysqli->query($sql);
 if (!$result) {
-    die('数据库查询出错:' . $mysqli->error);
+    LOGE('数据库查询出错:' . $mysqli->error);
+    die('');
 }
 
 if ($result->num_rows <= 0) {
-    die('没有需要更新的数据');
+    LOGE('没有需要更新的数据');
+    die('');
 }
 
 $res = $result->fetch_assoc();
@@ -39,14 +47,16 @@ curl_setopt($ch, CURLOPT_USERAGENT, $USER_AGENT);
 $content = curl_exec($ch);
 
 if (!$content) {
-    die("无法访问漫游资源页面：`${res['link']}'");
+    LOGE("无法访问漫游资源页面：`${res['link']}'");
+    die('');
 }
 
 
 $match = array();
 $ret = preg_match('(magnet([^"]+))', $content, $match);
 if (empty($match)) {
-    die("无法从漫游资源页面中找到磁力链接，原始内容如下：\n" . $content);
+    LOGE("无法从漫游资源页面中找到磁力链接，原始内容如下：" . $content);
+    die('');
 }
 
 $magnet = $match[0];
@@ -55,12 +65,12 @@ $magnet = $mysqli->real_escape_string($magnet);
 $sql = "UPDATE b_resource SET magnet='{$magnet}' WHERE resource_id={$res['resource_id']}";
 $mysqli->query($sql);
 
-echo "已保存磁力链接: ${magnet}\n";
+LOGI("已保存磁力链接: ${magnet}");
 
 
 /// 3. 下载 BT 种子文件
 $r = rand() % 20 + 10;
-echo "等待 {$r} 秒后去下载种子文件\n";
+LOGI("等待 {$r} 秒后去下载种子文件");
 sleep($r);
 
 
@@ -77,7 +87,8 @@ curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
 $content = curl_exec($ch);
 
 if (!$content) {
-    die("无法下载种子文件：`${res['guid']}'");
+    LOGE("无法下载种子文件：`${res['guid']}'");
+    die('');
 }
 
 $btih = $res['btih'];
@@ -88,11 +99,12 @@ if ($btih == '') {
 }
 
 if ($btih == '') {
-    die('无法获得种子文件的 BTIH，无法保存种子文件');
+    LOGE('无法获得种子文件的 BTIH，无法保存种子文件');
+    die('');
 }
 
 archive_torrent($content, $btih);
 
-echo "“{$res['title']}”处理完毕\n";
+LOGI("“{$res['title']}”处理完毕");
 
 ?>
