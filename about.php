@@ -31,7 +31,7 @@
             
             <h2>关于源码</h2>
             
-            <p>源码托管在 github.com 上，为了发动人民群众的力量，建立具有鲁棒性的 ACG 分享网络，源码使用 <a href="http://zh.wikipedia.org/wiki/WTFPL">WTFPL</a> 授权，欢迎在 github 上插我（fork me on github），你插越多我越高兴。</p>
+            <p>源码托管在 github.com 上，为了发动人民群众的力量，建立具有鲁棒性的 ACG 分享网络，源码使用 <a href="http://zh.wikipedia.org/wiki/WTFPL">WTFPL</a> 授权，欢迎<a href="https://github.com/greensea/rssindexer">在 github 上插我（fork me on github）</a>，你插越多我越高兴。</p>
             
             <h3>互动</h3>
             
