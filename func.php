@@ -171,7 +171,6 @@ function search($kw, $offset = 0, $limit = 100, &$count = '__DO_NOT_COUNT__') {
     
     /// 查询资源
     $sql = "SELECT * FROM b_resource {$where} ORDER BY pubDate DESC LIMIT {$offset},${limit}";
-    echo $sql;
     $result = $mysqli->query($sql);
     if (!$result) {
         LOGE($mysqli->error);
