@@ -38,3 +38,5 @@ ALTER TABLE `b_resource`
 ALTER TABLE `b_resource` ADD INDEX(`pubDate`);
 
 ALTER TABLE `b_resource` ADD INDEX(`magnet`);
+
+ALTER TABLE `b_resource` ADD INDEX(`btih`);
