@@ -40,7 +40,7 @@ if (!$resources) {
     die('');
 }
 
-LOGI("共 %d 个资源", count($resources));
+LOGI(sprintf("共 %d 个资源", count($resources)));
 
 
 /// 4. 将资源丢进数据库
