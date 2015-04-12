@@ -29,3 +29,8 @@ table th {
     min-width: 5em;
     text-align: center;
 }
+
+.footer div>span {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}

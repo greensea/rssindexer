@@ -136,6 +136,7 @@ function parse_rss($content) {
  */
 function search($kw, $offset = 0, $limit = 100, &$count = '__DO_NOT_COUNT__') {
     global $mysqli;
+    global $USE_FULLTEXT;
     
     $kw = str_replace('　', ' ', $kw);
     $kw = str_replace('+', ' ', $kw);
@@ -151,8 +152,16 @@ function search($kw, $offset = 0, $limit = 100, &$count = '__DO_NOT_COUNT__') {
         
         $k = $mysqli->real_escape_string($k);
         
-        //$conds[] = "(title LIKE '%{$k}%' OR description LIKE '%{$k}%')";
-        $conds[] = "(title LIKE '%{$k}%')";
+        
+        if ($USE_FULLTEXT) {
+            /// 全文索引的查询条件
+            $conds[] = "(MATCH(title) AGAINST ('{$k}' IN BOOLEAN MODE))";
+        }
+        else {
+            /// 非全文索引的查询条件
+            //$conds[] = "(title LIKE '%{$k}%' OR description LIKE '%{$k}%')";
+            $conds[] = "(title LIKE '%{$k}%')";
+        }
     }
     
     $where = '';
@@ -162,6 +171,7 @@ function search($kw, $offset = 0, $limit = 100, &$count = '__DO_NOT_COUNT__') {
     
     /// 查询资源
     $sql = "SELECT * FROM b_resource {$where} ORDER BY pubDate DESC LIMIT {$offset},${limit}";
+    echo $sql;
     $result = $mysqli->query($sql);
     if (!$result) {
         LOGE($mysqli->error);

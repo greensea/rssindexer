@@ -9,8 +9,11 @@
         </div>
     </div>
 
-    <div class="container-fluid">
-        <div class="col-sm-12 text-center text-muted">页面执行时间：<?php printf('%0.3f', 1000 * (microtime(TRUE) - $__t1));?>ms</div>
+    <div class="container-fluid footer">
+        <div class="col-sm-12 text-center text-muted">
+            <span>页面执行时间：<span class="text-info"><?php printf('%0.3f', 1000 * (microtime(TRUE) - $__t1));?>ms</span></span>
+            <span>全文索引：<?php echo $USE_FULLTEXT ? '<span class="text-success">已启用</span>' : '未启用';?></span>
+        </div>
     </div>
 
     <?php if ($BAIDU_STAT_ID != '') { ?>
