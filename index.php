@@ -42,16 +42,20 @@
 
 <?php
 require_once('header.php');
+
 $kw = isset($_GET['kw']) ? $_GET['kw'] : '';
 $kw = str_replace('　', ' ', $kw);
 $kw = trim($kw);
 
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+$page = max($page, 1);
+
 $result = array();
 if ($kw == '') {
-    $result = search($kw, 50);
+    $result = search($kw, ($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
 }
 else {
-    $result = search($kw, 100);
+    $result = search($kw, ($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
 }
 ?>
         
@@ -62,7 +66,7 @@ else {
       }
       else {
           $str = htmlspecialchars($_GET['kw']);
-          echo "“{$str}”的搜索结果（共 " . count($result) . " 个）";
+          echo "“{$str}”的搜索结果（共 " . $cnt . " 个）";
       }
       ?>
       </div>
@@ -119,6 +123,34 @@ else {
         
     <?php } ?>
     </table>
+    </div>
+    
+    <div class="container-fluid">
+        <nav class="pull-right">
+          <ul class="pagination">
+            <?php
+            $pages = array();
+            $page_count = max(1, ceil($cnt / $PAGE_SIZE));
+            
+            /// 显示前后 4 页
+            for ($i = $page; $i >= 1 && $i >= $page - 4; $i--) {
+                $pages[] = $i;
+            }
+            for ($i = $page; $i <= $page_count && $i <= $page + 4; $i++) {
+                $pages[] = $i;
+            }
+            $pages = array_unique($pages);
+            sort($pages);
+            ?>
+            <li><a href="?kw=<?php echo htmlspecialchars($kw);?>&page=1">首页</a></li>
+            
+            <?php foreach ($pages as $i) { ?>
+            <li <?php if ($i == $page) { ?>class="active"<?php } ?>><a href="?kw=<?php echo htmlspecialchars($kw);?>&page=<?php echo $i;?>"><?php echo $i;?></a></li>    
+            <?php } ?>
+            
+            <li><a href="?kw=<?php echo htmlspecialchars($kw);?>&page=<?php echo $page_count;?>">末页</a></li>
+          </ul>
+        </nav>
     </div>
     
     

@@ -134,7 +134,7 @@ function parse_rss($content) {
 /**
  * 根据给定的关键字搜索资源
  */
-function search($kw, $limit = 100) {
+function search($kw, $offset = 0, $limit = 100, &$count = '__DO_NOT_COUNT__') {
     global $mysqli;
     
     $kw = str_replace('　', ' ', $kw);
@@ -160,16 +160,34 @@ function search($kw, $limit = 100) {
         $where = ' WHERE ' . implode(' AND ', $conds);
     }
     
-    $sql = "SELECT * FROM b_resource {$where} ORDER BY pubDate DESC LIMIT ${limit}";
+    /// 查询资源
+    $sql = "SELECT * FROM b_resource {$where} ORDER BY pubDate DESC LIMIT {$offset},${limit}";
     $result = $mysqli->query($sql);
     if (!$result) {
-        die($mysqli->error);
+        LOGE($mysqli->error);
+        die();
     }
     
     $rows = array();
     while ($row = $result->fetch_assoc()) {
         $rows[] = $row;
     }
+    
+    
+    /// 查询总行数
+    if ($count !== '__DO_NOT_COUNT__') {
+        $sql = "SELECT COUNT(*) AS cnt FROM b_resource {$where}";
+        $result = $mysqli->query($sql);
+        if (!$result) {
+            LOGE($mysqli->error);
+            die();
+        }
+        else {
+            $row = $result->fetch_assoc();
+            $count = $row['cnt'];
+        }
+    }
+    
     
     return $rows;
 }
