@@ -13,5 +13,9 @@ require_once('func.php');
 
 /// 创建数据库连接
 $mysqli = new Mysqli($DB_HOST, $DB_USER, $DB_PASSWORD, $DB_DATABASE);
+if (!$mysqli) {
+    LOGE('无法创建 MySQL 连接: ' . $mysqli->error);
+    die();
+}
 $mysqli->query("set NAMES 'utf8'");
 ?>
