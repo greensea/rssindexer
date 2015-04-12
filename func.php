@@ -7,19 +7,16 @@ function LOGS($log) {
     global $LOG_PATH;
     
     $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-
-    
-    $log = $log . sprintf('(%s:%d)', basename(@$bt[1]['file']), @$bt[1]['line']);
-    
-    /// 附加进程编号
     $pid = posix_getpid();
-    $log = "(${pid})"  . $log;
+    
+    $log = $log . sprintf(' (%d,%s:%d)', $pid, basename(@$bt[1]['file']), @$bt[1]['line']);
+        
     
     
     //syslog(LOG_INFO, $log);
     
     /// 附加日期
-    $log = '[' . date(DATE_RFC822) . ']' . $log . "\n";
+    $log = '[' . date(DATE_RFC822) . '] ' . $log . "\n";
     
     
     echo $log;
