@@ -12,7 +12,8 @@ require_once('header.php');
 
 /// 1. 获取未填补的资源
 /// 临时性修改，因为我们索引了 POPGO 所有的历史资源，为了保证能够及时补充最新资源的信息，这里会随机查询最新的资源和查询随机资源
-$sql = "SELECT * FROM b_resource WHERE magnet='' AND link LIKE '%popgo%' ORDER BY rand() LIMIT 1";
+/// 这里使用子查询是为了避免这种情况：当符合 where 条件的行数太多时，ORDER BY rand() 会生成一个巨大的临时表，如果临时文件分区空间不足，查询就会失败
+$sql = "SELECT * FROM (SELECT * FROM b_resource WHERE magnet='' AND link LIKE '%popgo%' LIMIT 1000) AS t1 ORDER BY RAND() LIMIT 1";
 if (rand() % 100 < 20) {
     /// 100 次中有 20 次（1/5）查询最新资源
     $sql = "SELECT * FROM b_resource WHERE magnet='' AND link LIKE '%popgo%' ORDER BY pubDate DESC LIMIT 1";
