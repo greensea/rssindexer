@@ -23,7 +23,7 @@
                 <sup class="text-muted beta">BETA</sup>
             </div>
             <div class="col-sm-12 text-center head-subtitle">
-                Anime RSS 索引站
+                Anime RSS 索引站，将你的搜索结果订阅为 RSS 源
             </div>
         </div>
       </div>
