@@ -51,6 +51,7 @@ archive_torrent($content, $btih);
 
 header("Content-Disposition: attachment; filename={$btih}.torrent");
 header('Content-Type: application/x-bittorrent');
+ob_clean();
 echo $content;
 
 ?>
