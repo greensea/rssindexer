@@ -19,7 +19,9 @@ function LOGS($log) {
     $log = '[' . date(DATE_RFC822) . '] ' . $log . "\n";
     
     
-    echo $log;
+    if (php_sapi_name() == 'cli') {
+        echo $log;
+    }
     
     if ($LOG_PATH) {
         file_put_contents($LOG_PATH, $log, FILE_APPEND);
@@ -74,16 +76,39 @@ function archive_raw($content) {
  * 将一个种子文件进行归档
  */
 function archive_torrent($raw, $btih) {
+    /// FIXME: 应该使用 get_torrent_path 来获取路径
     $dir = 'torrent/' . substr($btih, 0, 2) . '/' . substr($btih, 2, 2) . '/';
     $path = $dir . $btih . '.torrent';
     
     if (!is_dir($dir)) {
-        mkdir($dir, 0755, TRUE);
+        $umask = umask();
+        umask(0002);
+        
+        $ret = mkdir($dir, 0775, TRUE);
+        
+        umask($umask);
+        
+        if (!$ret) {
+            LOGE("无法创建目录“{$dir}”: " . var_export(error_get_last(), TRUE));
+        }
     }
     
     echo "保存种子文件到`{$path}'\n";
     
-    file_put_contents($path, $raw);
+    $ret = file_put_contents($path, $raw);
+    if (!$ret) {
+        LOGW("无法保存种子文件到`{$path}': " . var_export(error_get_last(), TRUE));
+    }
+}
+
+/**
+ * 根据 btih 获取种子文件的路径
+ */
+function get_torrent_path($btih) {
+    $dir = 'torrent/' . substr($btih, 0, 2) . '/' . substr($btih, 2, 2) . '/';
+    $path = $dir . $btih . '.torrent';
+    
+    return $path;
 }
 
 /**
@@ -239,7 +264,7 @@ function popgo_parse_html($content) {
             'title' => $title,
             'magnet' => $magnet,
             'link' => 'http://share.popgo.org' . $link,
-            'guid' => sprintf('http://share.popgo.org/downseed.php?hash=%s', $btih),
+            'guid' => popgo_get_seed_url($btih),
             'pubDate' => strtotime($pubDate),
             'btih' => $btih,
         );
@@ -258,6 +283,30 @@ function popgo_get_btih_from_link($link) {
     else {
         return NULL;
     }
+}
+
+/**
+ * 根据 BTIH 生成漫游的种子下载链接
+ */
+function popgo_get_seed_url($btih) {
+    return sprintf('http://share.popgo.org/downseed.php?hash=%s', $btih);
+}
+
+
+/**
+ * 将一个相对地址转换成本站的绝对地址
+ */
+function mkurl($relpath) {
+    $schema = 'http://';
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']) {
+        $schema = 'https://';
+    }
+    
+    if (substr($relpath, 0, 1) != '/') {
+        $relpath = '/' . $relpath;
+    }
+    
+    return $schema . $_SERVER['HTTP_HOST'] . $relpath;
 }
 
 ?>

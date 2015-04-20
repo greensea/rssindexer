@@ -95,23 +95,32 @@ else {
         </tr>
     <?php
     foreach ($result as $res) {
+        $btih = $res['btih'];
         
+        $link = $res['magnet'];
+        if ($link == '') {
+            $match;
+            $hash = preg_match('([0-9a-f]{40})', $res['guid'], $match);
+            if ($match) {
+                $link = 'magnet:?xt=urn:btih:' . $match[0];
+                
+                if ($btih == '') {
+                    $btih = $match[0];
+                }
+            }
+        }
+
+
+        $seedurl = $res['guid'];
+        if ($USE_LOCAL_SEED == TRUE && $btih != '') {
+            $seedurl = "seed.php?btih={$btih}";
+        }
     ?>
         <tr>
             <td class="pubDate"><?php echo date('Y-m-d H:i:s', $res['pubDate']);?></td>
             <td><?php echo htmlspecialchars($res['title']);?></td>
-            <td class="guid"><a href="<?php echo htmlspecialchars($res['guid']);?>">种子</a></td>
+            <td class="guid"><a href="<?php echo htmlspecialchars($seedurl);?>">种子</a></td>
             <td class="link">
-                <?php
-                $link = $res['magnet'];
-                if ($link == '') {
-                    $match;
-                    $hash = preg_match('([0-9a-f]{40})', $res['guid'], $match);
-                    if ($match) {
-                        $link = 'magnet:?xt=urn:btih:' . $match[0];
-                    }
-                }
-                ?>
                 <?php if ($link != '') { ?>
                     <a href="<?php echo htmlspecialchars($link);?>">磁力</a>
                 <?php } else { ?>

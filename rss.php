@@ -29,13 +29,20 @@ foreach ($result as $res) {
             continue;
         }
         $res[$k] = htmlspecialchars($v);
+        
+        $link = $res['guid'];
+
+        $btih = popgo_get_btih_from_link($res['link']);        
+        if ($USE_LOCAL_SEED == TRUE && $btih != '') {
+            $link = mkurl("/seed.php?btih={$btih}");
+        }
     }
     
     echo <<<EOF
         <item>
             <title>{$res['title']}</title>
             <guid isPermaLink="false">{$res['guid']}</guid>
-            <link>{$res['guid']}</link>
+            <link>{$link}</link>
             <enclosure url="{$res['guid']}" type="application/x-bittorrent" />
             <description><![CDATA[ {$res['description']} ]]></description>
         </item>
