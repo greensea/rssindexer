@@ -41,9 +41,9 @@ foreach ($result as $res) {
     echo <<<EOF
         <item>
             <title>{$res['title']}</title>
-            <guid isPermaLink="false">{$res['guid']}</guid>
-            <link>{$link}</link>
-            <enclosure url="{$res['guid']}" type="application/x-bittorrent" />
+            <guid isPermaLink="false">{$link}</guid>
+            <link>{$res['link']}</link>
+            <enclosure url="{$link}" type="application/x-bittorrent" />
             <description><![CDATA[ {$res['description']} ]]></description>
         </item>
 
