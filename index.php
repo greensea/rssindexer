@@ -1,6 +1,31 @@
 <DOCTYPE html>
 <html lang="zh-CN">
 
+<?php
+require_once('header.php');
+
+$kw = isset($_GET['kw']) ? $_GET['kw'] : '';
+$kw = str_replace('　', ' ', $kw);
+$kw = trim($kw);
+
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+$page = max($page, 1);
+
+$result = array();
+if ($kw == '') {
+    $result = search($kw, ($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
+}
+else {
+    $result = search($kw, ($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
+}
+
+
+$TIPS[] = '输入关键词';
+shuffle($TIPS);
+$tip = array_pop($TIPS);
+
+?>
+
   <head>
     
     <meta charset="utf-8">
@@ -32,7 +57,7 @@
       <form action="" method="get" role="form" style="margin-top: 2em;">
         <div class="form-group">
             <div class="col-sm-5 col-sm-offset-3">
-                <input class="form-control" type="text" placeholder="输入关键词" name="kw" value="<?php echo htmlspecialchars(@$_GET['kw']);?>" />
+                <input class="form-control" type="text" name="kw" value="<?php echo htmlspecialchars(@$_GET['kw']);?>" placeholder="<?php echo htmlspecialchars($tip);?>" />
             </div>
             <button class="btn btn-primary" type="submit">搜索</button>
         </div>
@@ -40,24 +65,6 @@
       </div>
 
 
-<?php
-require_once('header.php');
-
-$kw = isset($_GET['kw']) ? $_GET['kw'] : '';
-$kw = str_replace('　', ' ', $kw);
-$kw = trim($kw);
-
-$page = isset($_GET['page']) ? $_GET['page'] : 1;
-$page = max($page, 1);
-
-$result = array();
-if ($kw == '') {
-    $result = search($kw, ($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
-}
-else {
-    $result = search($kw, ($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
-}
-?>
         
       <div class="container-fluid text-primary text-center text-large" style="font-size: 1.2em;">
       <?php
