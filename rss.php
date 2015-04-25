@@ -3,7 +3,11 @@ require_once('header.php');
 
 $kw = isset($_GET['kw']) ? $_GET['kw'] : '';
 
-$result = search($kw);
+$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 100;
+$limit = max($limit, 1);
+$limit = min($limit, 100);
+
+$result = search($kw, 0, $limit);
 
 
 $date = date(DATE_RSS);
