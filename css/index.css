@@ -16,6 +16,9 @@ table th {
     text-align: center;
 }
 
+table td.pubDate {
+    min-width: 7em;
+}
 
 .resources .guid {
     min-width: 6em;
