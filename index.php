@@ -45,7 +45,7 @@ $tip = array_pop($TIPS);
         <div class="row">
             <div class="col-sm-12 text-center head-title">
                 KOTOMI RSS
-                <sup class="text-muted beta">BETA</sup>
+                <!--<sup class="text-muted beta">BETA</sup>-->
             </div>
             <div class="col-sm-12 text-center head-subtitle">
                 Anime RSS 索引站，将你的搜索结果订阅为 RSS 源
