@@ -5,10 +5,12 @@ $btih = isset($_GET['btih']) ? $_GET['btih'] : '';
 
 $path = get_torrent_path($btih);
 
+
 /// 种子已保存到本地，直接返回种子文件，并结束
 if (file_exists($path)) {
+    $ua = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
     
-    if ($RSSOWL_WORKAROUND != TRUE) {
+    if ($RSSOWL_WORKAROUND != TRUE || preg_match('/rssowl/i', $ua) <= 0) {
         /// 直接将用户重定向到种子地址
         header('Location: ' . htmlspecialchars($path));
     }
@@ -26,6 +28,7 @@ if (file_exists($path)) {
 }
 
 
+/// 种子文件还未下载回本地，到源网站去下载
 
 /// 检查 btih 合法性，btih 应该是一个长度为 40 的哈希字符串
 $ret = preg_match('/^[0-9a-z]{40}$/', $btih);
