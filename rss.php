@@ -9,6 +9,12 @@ $limit = min($limit, 100);
 
 $result = search($kw, 0, $limit);
 
+$title = 'KOTOMI RSS';
+if (!empty($kw)) {
+    $title = "$kw - $title";
+}
+$title = htmlspecialchars($title);
+    
 
 $date = date(DATE_RSS);
 
@@ -17,7 +23,7 @@ header('Content-Type: text/xml');
 echo <<<EOF
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
-        <title>KOTOMI RSS</title>
+        <title>{$title}</title>
         <link>https://kotomi-rss.moe/</link>
         <description>KOTOMI RSS 资源页</description>
         <language>zh-cn</language>
