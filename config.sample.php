@@ -35,11 +35,11 @@ $USE_FULLTEXT = TRUE;
 /**
  * 是否使用静态地址替代 seed.php （种子链接下载地址）
  * 如果开启了此选项，请自行在服务器上配置 URL 重写规则：
- *  /seed/{$btih}.torrent  --> /seed.php?btih={$btih}
+ *  /seed-{$btih}.torrent  --> /seed.php?btih={$btih}
  * 其中，{$btih} 是一个 40 字节的字符串，仅包含小写英文字母和数字
  * 
  * Nginx 示例：
- *  rewrite /seed/([a-z0-9]+).torrent /seed.php?btih=$1
+ *  rewrite /seed-([a-z0-9]+).torrent /seed.php?btih=$1
  */
 $STATIC_SEED_URL = FALSE;
 
