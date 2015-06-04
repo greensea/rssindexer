@@ -120,7 +120,7 @@ $tip = array_pop($TIPS);
 
         $seedurl = $res['guid'];
         if ($USE_LOCAL_SEED == TRUE && $btih != '') {
-            $seedurl = "seed.php?btih={$btih}";
+            $seedurl = btih_seed_url($btih);
         }
     ?>
         <tr>

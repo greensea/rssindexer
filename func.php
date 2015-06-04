@@ -309,4 +309,20 @@ function mkurl($relpath) {
     return $schema . $_SERVER['HTTP_HOST'] . $relpath;
 }
 
+/**
+ * 根据一个 BTIH 值，生成下载地址
+ * 根据配置文件中的 STATIC_SEED_URL 选项的配置，该函数会返回类似 seed.php?btih=xxx 的动态地址或静态地址
+ */
+function btih_seed_url($btih) {
+    global $STATIC_SEED_URL;
+    
+    if ($STATIC_SEED_URL == TRUE) {
+        return "seed-{$btih}.torrent";
+    }
+    else {
+        return "seed.php?btih={$btih}";
+    }
+}
+
+
 ?>

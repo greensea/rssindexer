@@ -38,7 +38,8 @@ foreach ($result as $res) {
 
         $btih = popgo_get_btih_from_link($res['link']);        
         if ($USE_LOCAL_SEED == TRUE && $btih != '') {
-            $link = mkurl("/seed.php?btih={$btih}");
+            $link = '/' . btih_seed_url($btih);
+            $link = mkurl($link);
         }
     }
     
