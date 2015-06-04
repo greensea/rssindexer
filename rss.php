@@ -22,6 +22,7 @@ $date = date(DATE_RSS);
 header('Content-Type: text/xml');
 
 echo <<<EOF
+<?xml version="1.0" encoding="UTF-8" ?>
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
         <title>{$title}</title>
