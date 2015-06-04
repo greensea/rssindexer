@@ -2,6 +2,7 @@
 require_once('header.php');
 
 $kw = isset($_GET['kw']) ? $_GET['kw'] : '';
+$kw = trim($kw);
 
 $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 100;
 $limit = max($limit, 1);
@@ -10,7 +11,7 @@ $limit = min($limit, 100);
 $result = search($kw, 0, $limit);
 
 $title = 'KOTOMI RSS';
-if (!empty($kw)) {
+if (strlen($kw) > 0) {
     $title = "$kw - $title";
 }
 $title = htmlspecialchars($title);
