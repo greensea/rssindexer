@@ -5,10 +5,27 @@ $btih = isset($_GET['btih']) ? $_GET['btih'] : '';
 
 $path = get_torrent_path($btih);
 
+/// 种子已保存到本地，直接返回种子文件，并结束
 if (file_exists($path)) {
-    header('Location: ' . htmlspecialchars($path));
+    
+    if ($RSSOWL_WORKAROUND != TRUE) {
+        /// 直接将用户重定向到种子地址
+        header('Location: ' . htmlspecialchars($path));
+    }
+    else {
+        /// 针对 RSSOWL 的特殊处理（详情见 config.sample.php 中的注释）
+        @ob_clean();
+        header("Content-Disposition: attachment; filename={$btih}.torrent");
+        header('Content-Type: application/x-bittorrent');
+        echo file_get_contents($path);
+    }
+    
+    
     die();
+    exit(0);
 }
+
+
 
 /// 检查 btih 合法性，btih 应该是一个长度为 40 的哈希字符串
 $ret = preg_match('/^[0-9a-z]{40}$/', $btih);
