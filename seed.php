@@ -12,7 +12,7 @@ if (file_exists($path)) {
     
     if ($RSSOWL_WORKAROUND != TRUE || preg_match('/rssowl/i', $ua) <= 0) {
         /// 直接将用户重定向到种子地址
-        header('Location: ' . htmlspecialchars($path));
+        header('Location: ' . $path);
     }
     else {
         /// 针对 RSSOWL 的特殊处理（详情见 config.sample.php 中的注释）
