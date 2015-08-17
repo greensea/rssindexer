@@ -8,11 +8,18 @@
  
 /// 漫游 HTML 页面保存目录
 $popgo_html_archive_dir = '../popgo_html_archive';
-
+$DRY_RUN = FALSE;	/// 是否仅测试运行（即不修改数据库）
 
 require_once('header.php');
 
+if ($DRY_RUN) {
+    LOGI("目前运行在测试模式，所有的操作都不会保存");
+    $mysqli->autocommit(0);
+}
+
+
 $cnt_new = 0;
+$cnt_count = 0;
 
 for ($i = 1; file_exists("${popgo_html_archive_dir}/${i}.html"); $i++) {
     $path = "${popgo_html_archive_dir}/${i}.html";
@@ -32,7 +39,7 @@ for ($i = 1; file_exists("${popgo_html_archive_dir}/${i}.html"); $i++) {
     }
     
     LOGI("`{$path}' 中共有 " . count($resources) . " 个资源");
-    
+    $cnt_count += count($resources);
     
     foreach ($resources as $res) {
         LOGI("检查“{$res['title']}”是否已经在数据库中");
@@ -63,7 +70,7 @@ for ($i = 1; file_exists("${popgo_html_archive_dir}/${i}.html"); $i++) {
         }
         $row = $result->fetch_assoc();
         if ($row['cnt'] > 0) {
-            LOGI("数据库中已经相同 btih 的资源了，跳过这个资源");
+            LOGI("数据库中已经存在相同 btih 的资源了，跳过这个资源");
             continue;
         }
         
@@ -90,7 +97,11 @@ for ($i = 1; file_exists("${popgo_html_archive_dir}/${i}.html"); $i++) {
     }
 }
 
+if ($DRY_RUN) {
+    LOGI("目前运行在测试模式，将回滚数据库");
+    $mysqli->rollback();
+}
 
-LOGI("资源索引完成，共新添加了 {$cnt_new} 个资源");
+LOGI("资源索引完成，分析得到 {$cnt_count} 个资源，共新添加了 {$cnt_new} 个资源");
  
 ?>
