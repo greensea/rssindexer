@@ -56,7 +56,7 @@ if (!$content) {
 $match = array();
 $ret = preg_match('(magnet([^"]+))', $content, $match);
 if (empty($match)) {
-    LOGE("无法从漫游资源页面（$res['link']}）中找到磁力链接，原始内容如下：" . $content);
+    LOGE("无法从漫游资源页面（${res['link']}）中找到磁力链接，原始内容如下：" . $content);
     die('');
 }
 
