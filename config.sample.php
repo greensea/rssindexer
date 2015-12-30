@@ -20,7 +20,8 @@ $USER_AGENT = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.2.4410) Ge
 
 $LOG_PATH = '';     /// 运行日志的地址，如果不需要日志请留空
 
-$RSS_FEED = 'http://share.popgo.org/rss/rss.xml';     /// 填写源 RSS 发布页的地址
+/// 在 popgo-gone 版本之后不再有效
+//$RSS_FEED = 'http://share.popgo.org/rss/rss.xml';     /// 填写源 RSS 发布页的地址
 
 $PAGE_SIZE = 100;       /// 每页显示的结果数
 

@@ -98,6 +98,10 @@ function archive_torrent($raw, $btih) {
     $ret = file_put_contents($path, $raw);
     if (!$ret) {
         LOGW("无法保存种子文件到`{$path}': " . var_export(error_get_last(), TRUE));
+        return FALSE;
+    }
+    else {
+        return $path;
     }
 }
 
@@ -322,6 +326,21 @@ function btih_seed_url($btih) {
     else {
         return "seed.php?btih={$btih}";
     }
+}
+
+
+/**
+ * 将字符串以可读的十六进制格式输出（小写）
+ */
+function hexdump($s) {
+    $s = array_map('ord', str_split($s, 1));
+    $s = array_map('dechex', $s);
+    $ret = '';
+    foreach ($s as $v) {
+        $ret .= str_pad($v, 2, '0', STR_PAD_LEFT);
+    }
+    
+    return $ret;
 }
 
 

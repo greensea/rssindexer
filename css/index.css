@@ -37,3 +37,10 @@ table td.pubDate {
     margin-left: 0.5em;
     margin-right: 0.5em;
 }
+
+.favicon-dmhy:before {
+    content: url('../img/favicon-dmhy.png') " ";
+}
+.favicon-popgo:before {
+    content: url('../img/favicon-popgo.png') " ";
+}

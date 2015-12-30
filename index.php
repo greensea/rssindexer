@@ -118,15 +118,25 @@ $tip = array_pop($TIPS);
         }
 
 
-        $seedurl = $res['guid'];
-        if ($USE_LOCAL_SEED == TRUE && $btih != '') {
-            $seedurl = btih_seed_url($btih);
+        /// 目前仅漫游提供了种子链接，花园只提供了磁力链接
+        $seedurl = NULL;
+        if ($res['src'] == 'popgo') {
+            $seedurl = $res['guid'];
+            if ($USE_LOCAL_SEED == TRUE && $btih != '') {
+                $seedurl = btih_seed_url($btih);
+            }
         }
     ?>
         <tr>
             <td class="pubDate"><?php echo date('Y-m-d H:i:s', $res['pubDate']);?></td>
-            <td><?php echo htmlspecialchars($res['title']);?></td>
-            <td class="guid"><a href="<?php echo htmlspecialchars($seedurl);?>">种子</a></td>
+            <td class="favicon-<?php echo $res['src'];?>"><?php echo htmlspecialchars($res['title']);?></td>
+            
+            <?php if ($seedurl): ?>
+                <td class="guid"><a href="<?php echo htmlspecialchars($seedurl);?>">种子</a></td>
+            <?php else: ?>
+                <td class="guid"><abbr title="请使用磁力链接下载">无种子</abbr></td>
+            <?php endif; ?>
+            
             <td class="link">
                 <?php if ($link != '') { ?>
                     <a href="<?php echo htmlspecialchars($link);?>">磁力</a>

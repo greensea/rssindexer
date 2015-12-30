@@ -1,14 +1,14 @@
 <?php
 $__t1 = microtime(TRUE);
 
-if (!file_exists('config.php')) {
+if (!file_exists(__DIR__ . '/config.php')) {
     die("缺少 config.php 文件，可以尝试 mv config.sample.php config.php");
 }
 else {
-    require_once('config.php');
+    require_once(__DIR__ . '/config.php');
 }
 
-require_once('func.php');
+require_once(__DIR__ . '/func.php');
 
 
 /// 创建数据库连接

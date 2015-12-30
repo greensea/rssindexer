@@ -58,7 +58,7 @@ curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
 
 $content = curl_exec($ch);
 
-if (!$content) {
+if (!$content || curl_error($ch)) {
     LOGD("无法从漫游下载种子（{$url}）:" . curl_error($ch));
     header('HTTP/1.1 500 Internal Error');
     die('<h1>500 Internal Error</h1>');
@@ -66,7 +66,19 @@ if (!$content) {
 
 
 LOGI("保存种子“{$btih}”，并将用户跳转到下载地址");
-archive_torrent($content, $btih);
+$path = archive_torrent($content, $btih);
+
+/// 检查下载的内容是否是种子，漫游在发生错误的时候仍会返回 HTTP 200，所以我们需要通过 MIME 来进行检查
+if (!$path || mime_content_type($path) != 'application/x-bittorrent') {
+    if ($path) {
+        unlink($path);
+    }
+    
+    LOGD("从漫游下载到的种子不是合法的 （{$url}）:" . curl_error($ch));
+    
+    header('HTTP/1.1 500 Internal Error');
+    die('<h1>500 Internal Error</h1>');
+}
 
 
 header("Content-Disposition: attachment; filename={$btih}.torrent");
