@@ -232,6 +232,27 @@ function search($kw, $offset = 0, $limit = 100, &$count = '__DO_NOT_COUNT__') {
 
 
 /**
+ * 根据 BTIH 获取一个资源在数据库中的数据
+ */
+function get_by_btih($btih) {
+    global $mysqli;
+    
+    $btih_qs = $mysqli->real_escape_string($btih);
+    $sql = "SELECT * FROM b_resource WHERE btih='{$btih_qs}'";
+    
+    $result = $mysqli->query($sql);
+    
+    if (!$result) {
+        LOGE($mysqli->error);
+        return FALSE;
+    }
+    else {
+        return $result->fetch_assoc();
+    }
+}
+    
+
+/**
  * 解析 POPGO 的 HTML 页面，提取 link，btih，magnet，并自动生成 guid 等信息
  * 
  * @return array    成功返回数组，失败时会输出错误信息，并返回空数组
@@ -268,7 +289,7 @@ function popgo_parse_html($content) {
             'title' => $title,
             'magnet' => $magnet,
             'link' => 'http://share.popgo.org' . $link,
-            'guid' => popgo_get_seed_url($btih),
+            'guid' => popgo_get_seed_url($btih),            /// FIXME: 使用 Indexer_Popgo::getSrcSeedURL 函数替代之
             'pubDate' => strtotime($pubDate),
             'btih' => $btih,
         );

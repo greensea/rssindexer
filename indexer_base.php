@@ -13,6 +13,11 @@ abstract class Indexer_Base {
      */
     abstract public function fetch();
     
+    /**
+     * 根据 BTIH 获取源站点的种子下载地址
+     */
+    abstract static public function getSrcSeedURL($btih);
+    
     
     /**
      * 下载资源列表，并返回资源数组

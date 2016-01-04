@@ -33,6 +33,10 @@ class Indexer_Popgo Extends Indexer_Base {
         return $ret;
     }
 
+
+    static public function getSrcSeedURL($btih) {
+        return popgo_get_seed_url($btih);
+    }
 }
 
 

@@ -116,15 +116,11 @@ $tip = array_pop($TIPS);
                 }
             }
         }
-
-
-        /// 目前仅漫游提供了种子链接，花园只提供了磁力链接
-        $seedurl = NULL;
-        if ($res['src'] == 'popgo') {
-            $seedurl = $res['guid'];
-            if ($USE_LOCAL_SEED == TRUE && $btih != '') {
-                $seedurl = btih_seed_url($btih);
-            }
+        
+        
+        $seedurl = $res['guid'];
+        if ($USE_LOCAL_SEED == TRUE && $btih != '') {
+            $seedurl = btih_seed_url($btih);
         }
     ?>
         <tr>

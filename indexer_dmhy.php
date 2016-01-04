@@ -37,6 +37,45 @@ class Indexer_DMHY Extends Indexer_Base {
         return $ret;
     }
 
+
+    static public function getSrcSeedURL($btih) {
+        global $USER_AGENT;
+        
+        /// 1. 从数据库中查询原始页面链接
+        $res = get_by_btih($btih);
+        if (!$res) {
+            LOGW("BTIH 为 {$btih} 的资源在数据库中不存在");
+            return FALSE;
+        }
+        
+        /// 2. 获取 link 页面内容
+        LOGI("正在获取动漫花园的资源页面内容: ${res['link']}");
+
+        $content = NULL;
+
+        $ch = curl_init($res['link']);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_ENCODING, ''); 
+        curl_setopt($ch, CURLOPT_USERAGENT, $USER_AGENT);
+        $content = curl_exec($ch);
+
+        if (!$content) {
+            LOGE("无法抓取动漫花园的资源页面: ${res['link']}'");
+            return FALSE;
+        }
+
+        /// 3. 解析 BT 地址
+        $matches = [];
+        $pattern = '/\/\/.+[a-f0-9]{40}\.torrent/';
+        $ret = preg_match($pattern, $content, $matches);
+        
+        if ($ret >= 1) {
+            return 'http:' . $matches[0];
+        }
+        else {
+            return FALSE;
+        }
+    }
 }
 
 ?>

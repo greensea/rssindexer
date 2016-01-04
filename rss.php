@@ -39,15 +39,10 @@ foreach ($result as $res) {
     /// 对于漫游，使用 guid 作为资源链接，对于花园，使用 magnet 作为资源链接
     $link = $res['guid'];
     
-    if ($res['src'] == 'dmhy') {
-        $link = $res['magnet'];
-    }
-    else if ($res['src'] == 'popgo') {
-        $btih = popgo_get_btih_from_link($res['link']);        
-        if ($USE_LOCAL_SEED == TRUE && $btih != '') {
-            $link = '/' . btih_seed_url($btih);
-            $link = mkurl($link);
-        }
+    $btih = $res['btih'];
+    if ($USE_LOCAL_SEED == TRUE && $btih != '') {
+        $link = '/' . btih_seed_url($btih);
+        $link = mkurl($link);
     }
     
     
