@@ -52,6 +52,18 @@ $STATIC_SEED_URL = FALSE;
 
 
 /**
+ * 是否在全站使用静态链接
+ * 
+ * 如果设定为 TRUE，资源详情页面（desc.php）的链接会被显示为 info-{$BTIH}.html
+ * 你需要自行设定服务器的 URL 重写规则
+ * 
+ * Nginx 示例：
+ *  rewrite /info-([a-z0-9]+).html /desc.php?btih=$1
+ */
+$STATIC_URL = TRUE;
+
+
+/**
  * rssowl 存在一个问题，在下载种子时，如果服务器发送了 Location HTTP 头要求进行重定向（HTTP 301/302 重定向），那么 rssowl 将无法正确识别下载文件的文件名。
  * 如果没有开启静态种子下载地址功能（$STATIC_SEED_URL == TRUE），那么 rssowl 会将下载回来的种子文件命名为 seed.php，在批量下载时，后下载的文件会覆盖先前下载的文件，导致无法完整下载。
  * 开启此选项后，对 RSSOWL 的下载请求将由 PHP 进行处理，这可以保证 rssowl 正确识别下载文件的名字，但会增加服务器负担。

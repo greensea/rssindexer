@@ -349,6 +349,22 @@ function btih_seed_url($btih) {
     }
 }
 
+/**
+ * 生成 desc 页面的 URL
+ */
+function btih_desc_url($btih) {
+    global $STATIC_URL;
+    
+    $btih = urlencode($btih);
+    
+    if ($STATIC_URL == TRUE) {
+        return "info-{$btih}.html";
+    }
+    else {
+        return "desc.php?btih=${btih}";
+    }
+}
+
 
 /**
  * 将字符串以可读的十六进制格式输出（小写）

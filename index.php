@@ -125,7 +125,15 @@ $tip = array_pop($TIPS);
     ?>
         <tr>
             <td class="pubDate"><?php echo date('Y-m-d H:i:s', $res['pubDate']);?></td>
-            <td class="favicon-<?php echo $res['src'];?>"><?php echo htmlspecialchars($res['title']);?></td>
+            
+            
+            <td class="favicon-<?php echo $res['src'];?>">
+                <?php if (trim($res['description'], " \r\n") != ''): ?>
+                    <a href="<?php echo btih_desc_url($res['btih']);?>"><?php echo htmlspecialchars($res['title']);?></a>
+                <?php else: ?>
+                    <?php echo htmlspecialchars($res['title']);?>
+                <?php endif;?>
+            </td>
             
             <?php if ($seedurl): ?>
                 <td class="guid"><a href="<?php echo htmlspecialchars($seedurl);?>">种子</a></td>

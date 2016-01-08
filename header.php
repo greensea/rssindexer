@@ -18,4 +18,6 @@ if (!$mysqli) {
     die();
 }
 $mysqli->query("set NAMES 'utf8'");
+
+$CSP_NONCE = uniqid() . 'X' . rand();
 ?>

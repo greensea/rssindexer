@@ -16,14 +16,19 @@
         </div>
     </div>
 
-    <?php if ($BAIDU_STAT_ID != '') { ?>
-    <script>
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "//hm.baidu.com/hm.js?<?php echo $BAIDU_STAT_ID;?>";
-      var s = document.getElementsByTagName("script")[0]; 
-      s.parentNode.insertBefore(hm, s);
-    })();
-    </script>
+    <?php
+    if ($BAIDU_STAT_ID != '') {
+        if (!$CSP_NONCE) {
+            $CSP_NONCE = rand();
+        }
+    ?>
+        <script nonce="<?php echo $CSP_NONCE?>">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "//hm.baidu.com/hm.js?<?php echo $BAIDU_STAT_ID;?>";
+          var s = document.getElementsByTagName("script")[0]; 
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
     <?php } ?>

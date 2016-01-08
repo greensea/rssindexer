@@ -12,6 +12,14 @@
     font-size: 1.2em;
 }
 
+.search {
+    margin-top: 2em;
+}
+.search-result-sub-title {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
 table th {
     text-align: center;
 }
@@ -43,4 +51,14 @@ table td.pubDate {
 }
 .favicon-popgo:before {
     content: url('../img/favicon-popgo.png') " ";
+}
+
+
+/** desc.php 页面的样式 */
+.desc {
+    margin-top: 1%;
+}
+.desc .content {
+    background-color: #eef;
+    border: 1px solid #ececec;
 }
