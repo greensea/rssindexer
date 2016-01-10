@@ -4,7 +4,7 @@
 <?php
 require_once('header.php');
 
-/// CSP 控制
+/// CSP 控制，避免 desc 中带有恶意代码
 header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' maxcdn.bootstrapcdn.com; img-src *; media-src *; script-src http://hm.baidu.com 'nonce-{$CSP_NONCE}'");
 
 /// 获取资源
@@ -61,7 +61,7 @@ if (!$res) {
 
 
         
-      <div class="container-fluid text-primary text-center text-large" class="search-result-sub-title">
+      <div class="container-fluid text-primary text-center text-large search-result-sub-title">
         <?php echo htmlspecialchars($res['title']);?>
       </div>
 
@@ -81,9 +81,14 @@ if (!$res) {
               $seed_url = btih_seed_url($res['btih']);
               $seed_url = htmlspecialchars($seed_url);
               $magnet = htmlspecialchars($res['magnet']);
+              $popularity = '未知';
+              if ($res['popularity'] >= 0) {
+                $popularity = round($res['popularity']);
+              }
               ?>
               <p>资源来源: <a href="<?php echo htmlspecialchars($res['link']);?>"><?php echo htmlspecialchars($res['src']);?></p></a>
               <p>索引建立时间: <?php echo date('Y-m-d H:i:s', $res['ctime']);?></p>
+              <p><abbr title="最近 7 日下载次数的估计">热门程度</abbr>: <?php echo $popularity;?></p>
               <p>种子地址(BT): <a href="<?php echo $seed_url;?>"><?php echo htmlspecialchars($res['title']);?></a></p>
               <p>磁力链接(magnet): <a href="<?php echo $magnet;?>"><?php echo htmlspecialchars($res['title']);?></a></p>
             </div>

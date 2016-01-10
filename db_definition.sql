@@ -1,5 +1,19 @@
+
 --
--- 表的结构 `b_resource`
+-- Table structure for table `b_dht_log`
+--
+
+CREATE TABLE `b_dht_log` (
+  `log_id` int(10) UNSIGNED NOT NULL,
+  `node_id` binary(20) NOT NULL,
+  `btih` binary(20) NOT NULL,
+  `ctime` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `b_resource`
 --
 
 CREATE TABLE `b_resource` (
@@ -12,12 +26,20 @@ CREATE TABLE `b_resource` (
   `btih` char(40) NOT NULL DEFAULT '',
   `src` enum('popgo','dmhy','','') NOT NULL COMMENT '资源来源',
   `pubDate` int(11) NOT NULL,
-  `ctime` int(11) NOT NULL
+  `ctime` int(11) NOT NULL,
+  `popularity` float NOT NULL DEFAULT '-1' COMMENT '热门程度缓存'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `b_dht_log`
+--
+ALTER TABLE `b_dht_log`
+  ADD PRIMARY KEY (`log_id`),
+  ADD KEY `btih` (`btih`,`ctime`) USING BTREE;
 
 --
 -- Indexes for table `b_resource`
@@ -31,11 +53,16 @@ ALTER TABLE `b_resource`
   ADD KEY `btih` (`btih`);
 
 --
--- 在导出的表使用AUTO_INCREMENT
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- 使用表AUTO_INCREMENT `b_resource`
+-- AUTO_INCREMENT for table `b_dht_log`
+--
+ALTER TABLE `b_dht_log`
+  MODIFY `log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `b_resource`
 --
 ALTER TABLE `b_resource`
   MODIFY `resource_id` int(11) NOT NULL AUTO_INCREMENT;

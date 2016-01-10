@@ -381,4 +381,116 @@ function hexdump($s) {
 }
 
 
+/**
+ * 将数据保存到数据库中
+ */
+function save2db($table, $data) {
+    global $mysqli;
+    
+    $keys = [];
+    $values = [];
+    foreach ($data as $k => $v) {
+        $keys[] = $mysqli->real_escape_string($k);
+        $values[] = "'" . $mysqli->real_escape_string($v) . "'";
+    }
+    
+    $table = $mysqli->real_escape_string($table);
+    
+    $sql = "INSERT INTO {$table} ( " . implode(',', $keys) . ") VALUES (" . implode(',', $values) . ")";
+    
+    $result = $mysqli->query($sql);
+    if (!$result) {
+        LOGW("第一次查询数据库失败，尝试重连后再次插入. SQL: ${sql}");
+        
+        $mysqli->ping();
+        $result = $mysqli->query($sql);
+        if (!$result) {
+            LOGW("第二次查询失败, SQL: {$sql}");
+            return FALSE;
+        }
+    }
+    
+    return TRUE;
+}
+
+/**
+ * 保存一个 announce_peer 数据，同时更新资源的 7 日下载数
+ */
+function logDHTAnnouncePeer($node_id, $btih) {
+    global $mysqli;
+    global $DB_HOST;
+    global $DB_USER;
+    global $DB_PASSWORD;
+    global $DB_DATABASE;
+    
+    /// 1. 检验数据合法性
+    $pattern = '/^[0-9a-f]{40}$/i';
+    if (!preg_match($pattern, $node_id)) {
+        LOGW("传入的 node_id({$node_id}) 格式不合法");
+        return FALSE;
+    }
+    if (!preg_match($pattern, $btih)) {
+        LOGW("传入的 btih({$btih}) 格式不合法");
+        return FALSE;
+    }
+    
+    
+    /// 2. 记录此次 announce_peer
+    $ctime = time();
+    $sql = "INSERT INTO b_dht_log (node_id, btih, ctime) VALUES (UNHEX('{$node_id}'), UNHEX('{$btih}'), $ctime)";
+    $result = $mysqli->query($sql);
+    if (!$result) {
+        LOGN("第一次查询 MySQL 失败，重试后准备继续: " . $mysqli->error . ". SQL: ${sql}");
+        
+        /// 重连 MySQL
+        /// FIXME: 连接 MySQL 应该独立成一个函数
+        $ret = $mysqli->real_connect($DB_HOST, $DB_USER, $DB_PASSWORD, $DB_DATABASE);
+        if (!$ret) {
+            LOGE('无法创建 MySQL 连接: ' . $mysqli->error);
+            return FALSE;
+        }
+        $mysqli->query("set NAMES 'utf8'");
+        
+        
+        $result = $mysqli->query($sql);
+        if (!$result) {
+            LOGW("第二次查询 MySQL 失败: " . $mysqli->error . ". SQL: ${sql}");
+            return FALSE;
+        }
+    }
+    
+    
+    /// 3. 更新资源热度（如果对应的 btih 存在）
+    $sql = "SELECT * FROM b_resource WHERE btih='{$btih}'";
+    $result = $mysqli->query($sql);
+    if ($result->num_rows <= 0) {
+        /// 资源不存在，无需更新
+        return TRUE;
+    }
+    
+    $popularity = 0;
+    $nodes = [];
+    
+    $ts = time() - 86400 * 7;   /// 查询最近 7 日的记录
+    $sql = "SELECT node_id, ctime FROM b_dht_log WHERE btih=UNHEX('{$btih}') AND ctime>{$ts} ORDER BY ctime ASC";
+    $result = $mysqli->query($sql);
+    
+    while ($row = $result->fetch_assoc()) {
+        if (isset($nodes[$row['node_id']]) && ($row['ctime'] - $nodes[$row['node_id']]['ctime'] < 60)) {
+            /// 1 分钟之内的相同 node_id 请求的相同的资源认为是同一次下载，不予记录
+            /// 什么都不用做
+        }
+        else {
+            $popularity++;
+        }
+        
+        $nodes[$row['node_id']] = $row;
+    }
+    
+    $sql = "UPDATE b_resource SET popularity={$popularity} WHERE btih='{$btih}'";
+    $mysqli->query($sql);
+    
+    return TRUE;
+}
+
 ?>
