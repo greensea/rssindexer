@@ -24,11 +24,12 @@ CREATE TABLE `b_resource` (
   `description` text NOT NULL,
   `magnet` varchar(4096) NOT NULL DEFAULT '',
   `btih` char(40) NOT NULL DEFAULT '',
-  `src` enum('popgo','dmhy','','') NOT NULL COMMENT '资源来源',
+  `src` enum('popgo','dmhy','','') NOT NULL DEFAULT '' COMMENT '资源来源',
   `pubDate` int(11) NOT NULL,
   `ctime` int(11) NOT NULL,
-  `popularity` float NOT NULL DEFAULT '-1' COMMENT '热门程度缓存'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `popularity` float NOT NULL DEFAULT '-1' COMMENT '热门程度缓存',
+  `pmtime` int(11) NOT NULL DEFAULT '0'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Indexes for dumped tables
@@ -46,11 +47,11 @@ ALTER TABLE `b_dht_log`
 --
 ALTER TABLE `b_resource`
   ADD PRIMARY KEY (`resource_id`),
-  ADD UNIQUE KEY `guid` (`guid`(255)) USING BTREE,
+  ADD UNIQUE KEY `btih` (`btih`) USING BTREE,
+  ADD KEY `guid` (`guid`(255)),
   ADD KEY `link` (`link`(255)),
-  ADD KEY `pubDate` (`pubDate`),
   ADD KEY `magnet` (`magnet`(255)),
-  ADD KEY `btih` (`btih`);
+  ADD KEY `pubDate` (`pubDate`);
 
 --
 -- AUTO_INCREMENT for dumped tables
