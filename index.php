@@ -96,8 +96,9 @@ $tip = array_pop($TIPS);
         <tr class="info">
             <th>发布时间</th>
             <th>种子名称</th>
-            <th style="width: 5em;">种子链接</th>
-            <th style="width: 5em;">磁力链接</th>
+            <th style="width: 3em;"><abbr title="根据近期下载次数计算而得">热度</abbr></th>
+            <th style="width: 5em;">种子</th>
+            <th style="width: 5em;">磁力链</th>
             <th style="width: 4em;">源页面</th>
         </tr>
     <?php
@@ -122,6 +123,13 @@ $tip = array_pop($TIPS);
         if ($USE_LOCAL_SEED == TRUE && $btih != '') {
             $seedurl = btih_seed_url($btih);
         }
+        
+        $popularity = '未知';
+        if ($res['popularity'] >= 0) {
+            $decays = (time() - $res['pmtime']) / 86400 / $POPULARITY_HALFLIFE_DAYS;
+            $popularity = $res['popularity'] * pow(2, -1 * $decays);
+            $popularity = round($popularity);
+        }
     ?>
         <tr>
             <td class="pubDate"><?php echo date('Y-m-d H:i:s', $res['pubDate']);?></td>
@@ -134,6 +142,8 @@ $tip = array_pop($TIPS);
                     <?php echo htmlspecialchars($res['title']);?>
                 <?php endif;?>
             </td>
+            
+            <td class="popularity"><?php echo $popularity;?></td>
             
             <?php if ($seedurl): ?>
                 <td class="guid"><a href="<?php echo htmlspecialchars($seedurl);?>">种子</a></td>

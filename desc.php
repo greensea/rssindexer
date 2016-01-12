@@ -5,7 +5,7 @@
 require_once('header.php');
 
 /// CSP 控制，避免 desc 中带有恶意代码
-header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' maxcdn.bootstrapcdn.com; img-src *; media-src *; script-src http://hm.baidu.com 'nonce-{$CSP_NONCE}'");
+header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' maxcdn.bootstrapcdn.com; font-src maxcdn.bootstrapcdn.com; img-src *; media-src *; script-src http://hm.baidu.com 'nonce-{$CSP_NONCE}'");
 
 /// 获取资源
 $btih = isset($_GET['btih']) ? $_GET['btih'] : '';
@@ -83,12 +83,13 @@ if (!$res) {
               $magnet = htmlspecialchars($res['magnet']);
               $popularity = '未知';
               if ($res['popularity'] >= 0) {
-                $popularity = round($res['popularity']);
+                $decays = (time() - $res['pmtime']) / 86400 / $POPULARITY_HALFLIFE_DAYS;
+                $popularity = round($res['popularity'] * pow(2, -1 * $decays));
               }
               ?>
               <p>资源来源: <a href="<?php echo htmlspecialchars($res['link']);?>"><?php echo htmlspecialchars($res['src']);?></p></a>
               <p>索引建立时间: <?php echo date('Y-m-d H:i:s', $res['ctime']);?></p>
-              <p><abbr title="最近 7 日下载次数的估计">热门程度</abbr>: <?php echo $popularity;?></p>
+              <p><abbr title="根据近期下载次数计算而得">热门程度</abbr>: <?php echo $popularity;?></p>
               <p>种子地址(BT): <a href="<?php echo $seed_url;?>"><?php echo htmlspecialchars($res['title']);?></a></p>
               <p>磁力链接(magnet): <a href="<?php echo $magnet;?>"><?php echo htmlspecialchars($res['title']);?></a></p>
             </div>

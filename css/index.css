@@ -28,6 +28,11 @@ table td.pubDate {
     min-width: 7em;
 }
 
+table td.popularity {
+    min-width: 3em;
+    text-align: center;
+}
+
 .resources .guid {
     min-width: 6em;
     text-align: center;
