@@ -83,6 +83,13 @@ $RSSOWL_WORKAROUND = TRUE;
 $USE_FULLTEXT = TRUE;
 
 
+/**
+ * 资源热度半衰期
+ * 
+ * 考虑到新番一般是每周一播，将半衰期设为 7，那么上一周的下载贡献的热度正好小于 0.5，四舍五入后正好为 0，意为上周下载对资源热度的贡献正好变为 0
+ */
+$POPULARITY_HALFLIFE_DAYS = 7;
+
 
 
 /**

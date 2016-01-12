@@ -416,13 +416,7 @@ function save2db($table, $data) {
 /**
  * 保存一个 announce_peer 数据，同时更新资源的 7 日下载数
  */
-function logDHTAnnouncePeer($node_id, $btih) {
-    global $mysqli;
-    global $DB_HOST;
-    global $DB_USER;
-    global $DB_PASSWORD;
-    global $DB_DATABASE;
-    
+function logDHTAnnouncePeer($node_id, $btih) {    
     /// 1. 检验数据合法性
     $pattern = '/^[0-9a-f]{40}$/i';
     if (!preg_match($pattern, $node_id)) {
@@ -438,6 +432,147 @@ function logDHTAnnouncePeer($node_id, $btih) {
     /// 2. 记录此次 announce_peer
     $ctime = time();
     $sql = "INSERT INTO b_dht_log (node_id, btih, ctime) VALUES (UNHEX('{$node_id}'), UNHEX('{$btih}'), $ctime)";
+    $result = db_query($sql);
+    if (!$result) {
+        LOGE("数据库查询失败");
+        return FALSE;
+    }
+    
+    
+    /// 3. 更新资源热度（如果对应的 btih 存在）
+    $sql = "SELECT * FROM b_resource WHERE btih='{$btih}'";
+    $result = db_query($sql);
+    
+    if ($result->num_rows <= 0) {
+        /// 资源不存在，无需更新
+        return TRUE;
+    }
+    else {
+        $res = $result->fetch_assoc();
+        if ($res['popularity'] < 0) {
+            LOGI("初始化资源 {$btih} 的热度");
+            init_popularity($btih);
+        }
+        
+        return update_popularity($res, $ctime);
+    }
+}
+
+/**
+ * 给定一个下载时间，更新指定资源的热度
+ * 
+ * @param array    当前资源数据
+ * @param int       在该参数指定的时刻，我们记录了一次 DHT 网络中关于此资源的 announce_peer 消息，于是需要更新 b_resource 表中的缓存
+ */
+function update_popularity($res, $ts) {
+    global $POPULARITY_HALFLIFE_DAYS;
+    
+    /**
+     * 热度算法说明：
+     * 热度计算基于下面的假设：
+     *  1. 每发生一次下载，就给对应资源增加 1 的热度
+     *  2. 每个下载给资源贡献的热度按指数衰减，半衰期为 $POPULARITY_HALFLIFE_DAYS 天。例如：下载刚刚发生时，该下载给资源贡献的热度为 1，下载发生 $POPULARITY_HALFLIFE_DAYS 天过后，该下载对资源贡献的热度就变为 0.5
+     *      例如，现在有 3 个下载，分别发生在 1、1.5、5 天前，那么当前这个资源的热度就是：
+     *          2^(-1) + 2^(-1.5) + 2^(-5)
+     * 算法具体实现：
+     *  为了节省资源，我们不会对每一次下载计算其当前对资源热度的贡献，我们会在数据库中缓存资源热度的对数，以便读取资源时快速计算资源热度。
+     *  下面演示一下具体的实现：
+     *  1. 首次计算热度时，直接计算每个下载对资源热度的贡献，然后求和，并将结果和最后下载时间保存到 popularity 和 pmtime 中
+     *  2. 当监听到一次下载时，需要更新资源热度，更新方法是：
+     *      popularity * e^(-k * (current_time - pmtime)) + 1
+     *     这个公式中的　popularity 是数据库中的 popularity 字段，e 是自然对数，-k 是系数，current_time 和 pmtime 是以日为单位的时间.
+     *     在实际计算时，为方便起见，直接使用 2 为底数，这样就省略了 k 参数
+     *     利用这个公式，我们就可以递增地计算所有下载对资源的贡献的热度之和，证明很简单，此就处不详述了
+     */
+    
+    /// 0. 检查本次下载是否是一次有效下载（相同的 node_id 在 60s 内对同一个资源的下载记录视为无效记录）
+    $sql = "SELECT * FROM b_dht_log WHERE ctime>{$ts} - 60 AND ctime<{$ts} LIMIT 1";
+    $result = db_query($sql);
+    if (!$result) {
+        LOGW("数据库查询出错");
+        return FALSE;
+    }
+    if ($result->num_rows > 0) {
+        /// 这是一次重复下载，不会更新热度
+        //LOGD("这是一次重复下载，不会更新热度");
+        returN TRUE;
+    }
+    
+    
+    /// 1. 计算热度
+    $days_elapsed = ($ts - $res['pmtime']) / 86400;
+    $popularity = $res['popularity'] * pow(2, -1 * ($days_elapsed / $POPULARITY_HALFLIFE_DAYS));
+    $popularity += 1;
+    
+    
+    /// 2. 更新数据库
+    //LOGD("更新资源 {$res['title']}({$res['btih']}) 的热度为 ${popularity}");
+    
+    $ts = (int)$ts;
+    $sql = "UPDATE b_resource SET popularity={$popularity}, pmtime={$ts} WHERE btih='{$res['btih']}'";
+    return db_query($sql);   
+}
+
+/**
+ * 重新（初始化）计算一个资源的热度
+ */
+function init_popularity($btih) {
+    global $POPULARITY_HALFLIFE_DAYS;
+    
+    /// 0. 检验数据合法性
+    $pattern = '/^[0-9a-f]{40}$/i';
+    if (!preg_match($pattern, $btih)) {
+        LOGW("传入的 btih({$btih}) 格式不合法");
+        return FALSE;
+    }
+    
+    /// 1. 查询数据
+    $ts = time() - $POPULARITY_HALFLIFE_DAYS * 20 * 86400;  /// 只查询 20 个半衰期之内的数据，避免数据量过大
+    $sql = "SELECT node_id, ctime FROM b_dht_log WHERE btih=UNHEX('{$btih}') AND ctime>${ts} ORDER BY ctime ASC";
+    $result = db_query($sql);
+    if (!$result) {
+        LOGW("数据库查询出错");
+        return FALSE;
+    }
+    
+    $popularity = 0;
+    $nodes = [];
+    $pmtime = time();
+    
+    while ($row = $result->fetch_assoc()) {
+        if (isset($nodes[$row['node_id']]) && ($row['ctime'] - $nodes[$row['node_id']]['ctime'] < 60)) {
+            /// 1 分钟之内的相同 node_id 请求的相同的资源认为是同一次下载，不予记录
+            /// 什么都不用做
+        }
+        else {
+            $days = (time() - $row['ctime']) / 86400;
+            $popularity += pow(2, -1 * ($days / $POPULARITY_HALFLIFE_DAYS));
+            $pmtime = $row['ctime'];
+        }
+        
+        $nodes[$row['node_id']] = $row;
+    }
+    
+    
+    /// 3. 更新数据库
+    LOGD("资源 {$btih} 初始化的热度为 {$popularity}");
+    
+    $sql = "UPDATE b_resource SET popularity=${popularity}, pmtime={$pmtime} WHERE btih='{$btih}'";
+    return db_query($sql);
+}
+
+
+
+/**
+ * 进行一次 SQL 查询，如果连接断开，则自动重新尝试
+ */
+function db_query($sql) {
+    global $mysqli;
+    global $DB_HOST;
+    global $DB_USER;
+    global $DB_PASSWORD;
+    global $DB_DATABASE;
+        
     $result = $mysqli->query($sql);
     if (!$result) {
         LOGN("第一次查询 MySQL 失败，重试后准备继续: " . $mysqli->error . ". SQL: ${sql}");
@@ -459,38 +594,6 @@ function logDHTAnnouncePeer($node_id, $btih) {
         }
     }
     
-    
-    /// 3. 更新资源热度（如果对应的 btih 存在）
-    $sql = "SELECT * FROM b_resource WHERE btih='{$btih}'";
-    $result = $mysqli->query($sql);
-    if ($result->num_rows <= 0) {
-        /// 资源不存在，无需更新
-        return TRUE;
-    }
-    
-    $popularity = 0;
-    $nodes = [];
-    
-    $ts = time() - 86400 * 7;   /// 查询最近 7 日的记录
-    $sql = "SELECT node_id, ctime FROM b_dht_log WHERE btih=UNHEX('{$btih}') AND ctime>{$ts} ORDER BY ctime ASC";
-    $result = $mysqli->query($sql);
-    
-    while ($row = $result->fetch_assoc()) {
-        if (isset($nodes[$row['node_id']]) && ($row['ctime'] - $nodes[$row['node_id']]['ctime'] < 60)) {
-            /// 1 分钟之内的相同 node_id 请求的相同的资源认为是同一次下载，不予记录
-            /// 什么都不用做
-        }
-        else {
-            $popularity++;
-        }
-        
-        $nodes[$row['node_id']] = $row;
-    }
-    
-    $sql = "UPDATE b_resource SET popularity={$popularity} WHERE btih='{$btih}'";
-    $mysqli->query($sql);
-    
-    return TRUE;
+    return $result;
 }
-
 ?>

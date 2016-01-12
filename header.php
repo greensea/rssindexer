@@ -8,8 +8,6 @@ else {
     require_once(__DIR__ . '/config.php');
 }
 
-require_once(__DIR__ . '/func.php');
-
 
 /// 创建数据库连接
 $mysqli = new Mysqli($DB_HOST, $DB_USER, $DB_PASSWORD, $DB_DATABASE);
@@ -20,4 +18,9 @@ if (!$mysqli) {
 $mysqli->query("set NAMES 'utf8'");
 
 $CSP_NONCE = uniqid() . 'X' . rand();
+
+
+
+require_once(__DIR__ . '/func.php');
+
 ?>
