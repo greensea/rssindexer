@@ -29,8 +29,9 @@ table td.pubDate {
 }
 
 table td.popularity {
-    min-width: 3em;
+    min-width: 4em;
     text-align: center;
+    font-family: sans-serif;
 }
 
 .resources .guid {

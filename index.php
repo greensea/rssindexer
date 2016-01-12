@@ -36,6 +36,8 @@ $tip = array_pop($TIPS);
     <link href="css/index.css" rel="stylesheet">
     
     <link rel="alternate" type="application/rss+xml" title="KOTOMI RSS 页面" href="//moe4sale.in/rss.xml" />
+    <script type="text/javascript" src="js/sprint.min.js" async defer></script>
+    <script type="text/javascript" src="js/index.js" async defer></script>
   </head>
   <body>
       
@@ -96,9 +98,9 @@ $tip = array_pop($TIPS);
         <tr class="info">
             <th>发布时间</th>
             <th>种子名称</th>
-            <th style="width: 3em;"><abbr title="根据近期下载次数计算而得">热度</abbr></th>
-            <th style="width: 5em;">种子</th>
-            <th style="width: 5em;">磁力链</th>
+            <th style="width: 4em;"><abbr title="根据近期下载次数计算而得">热度</abbr></th>
+            <th style="width: 4em;">种子</th>
+            <th style="width: 4em;">磁力链</th>
             <th style="width: 4em;">源页面</th>
         </tr>
     <?php
