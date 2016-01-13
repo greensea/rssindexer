@@ -36,7 +36,7 @@ $bootstrap_nodes = array(
     array('router.utorrent.com', 6881),
     array('208.67.16.113', 8000),
     array('open.acgtracker.com', 1096),
-    array('t2.popgo.org', 7456),
+    //array('t2.popgo.org', 7456),
 );
 
 LOGI("DHT 爬虫服务启动");
@@ -47,7 +47,7 @@ $serv->set(array(
     'daemonize' => FALSE,
     'max_request' => MAX_REQUEST,
     'dispatch_mode' => 2,
-    'log_file' => ABSPATH . 'error.log'
+    'log_file' => '/dev/null'
 ));
 $serv->on('WorkerStart', function($serv, $worker_id){
     // 添加一个定时器, 使服务器定时寻找节点
