@@ -1,6 +1,6 @@
 <?php
 require_once('indexer_base.php');
-require_once('base32.php');
+require_once('lib/base32.php');
 require_once('func.php');
 
 class Indexer_DMHY Extends Indexer_Base {

@@ -5,7 +5,7 @@
 require_once('header.php');
 
 /// CSP 控制，避免 desc 中带有恶意代码
-header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' maxcdn.bootstrapcdn.com; font-src maxcdn.bootstrapcdn.com; img-src *; media-src *; script-src http://hm.baidu.com 'nonce-{$CSP_NONCE}'");
+header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' cdn.bootcss.com; font-src cdn.bootcss.com; img-src *; media-src *; script-src 'self' cdn.bootcss.com hm.baidu.com 'nonce-{$CSP_NONCE}'");
 
 /// 获取资源
 $btih = isset($_GET['btih']) ? $_GET['btih'] : '';
@@ -28,8 +28,10 @@ if (!$res) {
     <title><?php echo htmlspecialchars($res['title']);?> - KOTOMI RSS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/index.css" rel="stylesheet">
+    
+    <script type="text/javascript" src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
     
     <link rel="alternate" type="application/rss+xml" title="KOTOMI RSS 页面" href="//moe4sale.in/rss.xml" />
   </head>
@@ -70,6 +72,8 @@ if (!$res) {
           
           <div class="col-sm-12">
             <div class="alert content">
+              <h4><span class="text-primary">内容介绍</span></h4>
+              
               <?php echo $res['description'];?>
             </div>
           </div>
@@ -77,6 +81,8 @@ if (!$res) {
           
           <div class="col-sm-12">
             <div class="alert content">
+              <h4><span class="text-primary">资源信息</span></h4>
+              
               <?php
               $seed_url = btih_seed_url($res['btih']);
               $seed_url = htmlspecialchars($seed_url);
@@ -95,7 +101,22 @@ if (!$res) {
             </div>
           </div>
 
+          <div class="col-sm-12">
+            <div class="alert content files">
+              <h4><span class="text-primary">文件列表</span></h4>
+              <div class="files-loading">正在加载文件列表…</div>
+              <table class="table-hover" data-btih="<?php echo htmlspecialchars($res['btih']);?>">
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <script type="text/javascript" src="/js/desc.js" async defer></script>
+
+
         </div>
+        
+        
       </div>
       
     

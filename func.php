@@ -77,7 +77,7 @@ function archive_raw($content) {
  */
 function archive_torrent($raw, $btih) {
     /// FIXME: 应该使用 get_torrent_path 来获取路径
-    $dir = 'torrent/' . substr($btih, 0, 2) . '/' . substr($btih, 2, 2) . '/';
+    $dir = __DIR__ . '/torrent/' . substr($btih, 0, 2) . '/' . substr($btih, 2, 2) . '/';
     $path = $dir . $btih . '.torrent';
     
     if (!is_dir($dir)) {
@@ -93,7 +93,7 @@ function archive_torrent($raw, $btih) {
         }
     }
     
-    echo "保存种子文件到`{$path}'\n";
+    LOGI("保存种子文件到`{$path}'");
     
     $ret = file_put_contents($path, $raw);
     if (!$ret) {
@@ -109,7 +109,7 @@ function archive_torrent($raw, $btih) {
  * 根据 btih 获取种子文件的路径
  */
 function get_torrent_path($btih) {
-    $dir = 'torrent/' . substr($btih, 0, 2) . '/' . substr($btih, 2, 2) . '/';
+    $dir = __DIR__ . '/torrent/' . substr($btih, 0, 2) . '/' . substr($btih, 2, 2) . '/';
     $path = $dir . $btih . '.torrent';
     
     return $path;
@@ -258,7 +258,7 @@ function get_by_btih($btih) {
  * @return array    成功返回数组，失败时会输出错误信息，并返回空数组
  */
 function popgo_parse_html($content) {
-    require_once('phpQuery/phpQuery.php');
+    require_once('lib/phpQuery/phpQuery.php');
     
     $dom = phpQuery::newDocumentHTML($content);
     if (!$dom) {
@@ -595,5 +595,102 @@ function db_query($sql) {
     }
     
     return $result;
+}
+
+
+/**
+ * 到原始网站去将粽子文件下载回本地
+ * 
+ * @param string    BTIH
+ * @param int       错误代码，发生错误时使用此错误代码表明错误：0 表示成功，-1 表示传入的 btih 非法，-2 表示源网站返回 404，-3 表示无法获取原始种子下载地址，-4 表示 cURL 发生错误
+ * @return string   成功时返回种子文件保存的地址，失败时返回 FALSE
+ */
+function download_torrent($btih, &$err) {
+    /// 检查 btih 合法性，btih 应该是一个长度为 40 的哈希字符串
+    $ret = preg_match('/^[0-9a-z]{40}$/', $btih);
+    if (!$ret) {
+        LOGW("传入的 btih 参数非法({$btih})");
+        $err = -1;
+        return FALSE;
+    }
+    else {
+        $btih = strtolower($btih);
+    }
+
+
+    /// 2. 种子文件不存在，试图去源网站下载并保存
+    /// 2.1 解析种子地址
+    LOGD("请求的种子文件“{$btih}”不存在，尝试去源网站下载");
+    $url = "";
+    $res = get_by_btih($btih);
+    if (!$res) {
+        LOGW("BTIH 为 {$btih} 的资源不存在");
+        $err = -2;
+        return FALSE;
+    }
+    
+    switch ($res['src']) {
+        case 'popgo':
+            $url = Indexer_Popgo::getSrcSeedURL($btih);
+            break;
+        case 'dmhy':
+            $url = Indexer_DMHY::getSrcSeedURL($btih);
+            break;
+        default:
+            LOGE("代码不应执行到此处");
+            $url = FALSE;
+            break;
+    }
+    if (!$url) {
+        LOGW("无法获得 BTIH 为 {$btih} 的资源原始种子地址");
+        $err = -3;
+        return FALSE;
+
+    }
+
+    /// 2.2 开始下载
+    $content = NULL;
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_ENCODING, ''); 
+    curl_setopt($ch, CURLOPT_USERAGENT, $USER_AGENT);
+    curl_setopt($ch, CURLOPT_REFERER, '');
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+
+    $content = curl_exec($ch);
+
+    if (!$content || curl_error($ch)) {
+        LOGD("无法从漫游下载种子（{$url}）:" . curl_error($ch));
+        $err = -4;
+        return FALSE;
+    }
+
+
+    LOGI("保存种子“{$btih}”，并将用户跳转到下载地址");
+    $path = archive_torrent($content, $btih);
+    
+    return $path;
+
+}
+
+function apiout($code, $message = NULL, $data = NULL) {
+    header('Content-Type: application/json');
+    
+    $output = array(
+        'code' => $code
+    );
+    if ($message !== NULL) {
+        $output['message'] = $message;
+    }
+    if ($data !== NULL) {
+        $output['data'] = $data;
+    }
+    
+    $output = json_encode($output, JSON_UNESCAPED_UNICODE);
+    echo $output;
+    
+    die();
 }
 ?>

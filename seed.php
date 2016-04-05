@@ -31,73 +31,31 @@ if (file_exists($path)) {
 
 
 /// 1. 种子文件还未下载回本地，到源网站去下载
-
-/// 检查 btih 合法性，btih 应该是一个长度为 40 的哈希字符串
-$ret = preg_match('/^[0-9a-z]{40}$/', $btih);
-if (!$ret) {
+$err = 0;
+$path = download_torrent($btih, $err);
+if ($err == -1) {
     LOGD("btih 非法：“{$btih}”，向用户返回 404");
     header('HTTP/1.1 404 Not Found');
     die('<h1>404 Not Found</h1>');
 }
-else {
-    $btih = strtolower($btih);
-}
-
-
-/// 2. 种子文件不存在，试图去源网站下载并保存
-/// 2.1 解析种子地址
-LOGD("请求的种子文件“{$btih}”不存在，尝试去源网站下载");
-$url = "";
-$res = get_by_btih($btih);
-if (!$res) {
-    LOGW("BTIH 为 {$btih} 的资源不存在");
+else if ($err == -2) {
+    /// BTIH 为 {$btih} 的资源不存在
     header('HTTP/1.1 404 Not Found');
     die('<h1>404 Not Found</h1> <h2>BTIH not exists</h2>');
 }
-switch ($res['src']) {
-    case 'popgo':
-        $url = Indexer_Popgo::getSrcSeedURL($btih);
-        break;
-    case 'dmhy':
-        $url = Indexer_DMHY::getSrcSeedURL($btih);
-        break;
-    default:
-        LOGE("代码不应执行到此处");
-        $url = FALSE;
-        break;
-}
-if (!$url) {
-    LOGW("无法获得 BTIH 为 {$btih} 的资源原始种子地址");
+else if ($err == -3) {
+    /// 无法获得 BTIH 为 {$btih} 的资源原始种子地址
     header('HTTP/1.1 404 Not Found');
     die('<h1>404 Not Found</h1> <h2>Could not get source torrent URL</h2>');
-
 }
-
-/// 2.2 开始下载
-$content = NULL;
-
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-curl_setopt($ch, CURLOPT_ENCODING, ''); 
-curl_setopt($ch, CURLOPT_USERAGENT, $USER_AGENT);
-curl_setopt($ch, CURLOPT_REFERER, '');
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
-
-$content = curl_exec($ch);
-
-if (!$content || curl_error($ch)) {
-    LOGD("无法从漫游下载种子（{$url}）:" . curl_error($ch));
+else if ($err == -4) {
+    /// 无法从漫游下载种子（{$url}）;
     header('HTTP/1.1 500 Internal Error');
     die('<h1>500 Internal Error</h1>');
 }
 
 
-LOGI("保存种子“{$btih}”，并将用户跳转到下载地址");
-$path = archive_torrent($content, $btih);
-
-
-/// 3. 检查下载的内容是否是种子，漫游在发生错误的时候仍会返回 HTTP 200，所以我们需要通过 MIME 来进行检查
+/// 2. 检查下载的内容是否是种子，漫游在发生错误的时候仍会返回 HTTP 200，所以我们需要通过 MIME 来进行检查
 if (!$path || mime_content_type($path) != 'application/x-bittorrent') {
     if ($path) {
         unlink($path);

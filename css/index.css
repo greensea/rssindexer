@@ -68,3 +68,19 @@ table td.popularity {
     background-color: #eef;
     border: 1px solid #ececec;
 }
+
+.files table td {
+    padding-right: 1em;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    font-size: 14px;
+}
+.files .tip {
+    font-weight: bold;
+    margin-top: 0.5em;
+}
+.files .tip strong {
+    color: #78f;
+    padding: 0 0.25em;
+}
+
