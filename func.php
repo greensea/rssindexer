@@ -106,10 +106,18 @@ function archive_torrent($raw, $btih) {
 }
 
 /**
- * 根据 btih 获取种子文件的路径
+ * 根据 btih 获取种子文件的本地路径
  */
 function get_torrent_path($btih) {
-    $dir = __DIR__ . '/torrent/' . substr($btih, 0, 2) . '/' . substr($btih, 2, 2) . '/';
+    $path = __DIR__ . '/' . get_torrent_relative_path($btih);    
+    return $path;
+}
+
+/**
+ * 根据 btih 获取种子文件相对于 rssindexer 根目录的路径
+ */
+function get_torrent_relative_path($btih) {
+    $dir = 'torrent/' . substr($btih, 0, 2) . '/' . substr($btih, 2, 2) . '/';
     $path = $dir . $btih . '.torrent';
     
     return $path;
@@ -250,7 +258,31 @@ function get_by_btih($btih) {
         return $result->fetch_assoc();
     }
 }
+
+
+/**
+ * 获取当前用户的 IP 地址
+ */
+function get_ip() {
+    $ip = '';
+    if (isset($_SERVER['REMOTE_ADDR'])) {
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
     
+    return $ip;
+}
+
+/**
+ * 获取当前用户的 UserAgent
+ */
+function get_useragent() {
+    $useragent = '';
+    if (isset($_SERVER['HTTP_USER_AGENT'])) {
+        $useragent = $_SERVER['HTTP_USER_AGENT'];
+    }
+    return $useragent;
+}
+
 
 /**
  * 解析 POPGO 的 HTML 页面，提取 link，btih，magnet，并自动生成 guid 等信息
@@ -454,17 +486,66 @@ function logDHTAnnouncePeer($node_id, $btih) {
             init_popularity($btih);
         }
         
-        return update_popularity($res, $ctime);
+        return update_dht_popularity($res, $ctime);
     }
 }
 
+
 /**
- * 给定一个下载时间，更新指定资源的热度
+ * 记录一次下载操作，同时更新对应的资源热度
+ */
+function logDownload($btih) {
+    /// 1. 检验数据合法性
+    $pattern = '/^[0-9a-f]{40}$/i';
+    if (!preg_match($pattern, $btih)) {
+        LOGW("传入的 btih({$btih}) 格式不合法");
+        return FALSE;
+    }
+    
+    $sql = "SELECT * FROM b_resource WHERE btih='{$btih}'";
+    $result = db_query($sql);
+    
+    if ($result->num_rows <= 0) {
+        /// 资源不存在，无法记录
+        LOGW("资源`{$btih}'不存在，无法记录下载");
+        return FALSE;
+    }
+    $res = $result->fetch_assoc();
+    
+    
+    
+    /// 2. 记录此次 announce_peer
+    $ctime = time();
+    $ip = db_escape(get_ip());
+    $useragent = db_escape(get_useragent());
+    
+    $sql = "INSERT INTO b_download_log (btih, ctime, ip, useragent) VALUES (UNHEX('{$btih}'), $ctime, '{$ip}', '{$useragent}')";
+    $result = db_query($sql);
+    if (!$result) {
+        LOGE("数据库查询失败");
+        return FALSE;
+    }
+    
+    
+    /// 3. 更新资源热度（如果对应的 btih 存在）
+    if ($res['popularity'] < 0) {
+        LOGI("初始化资源 {$btih} 的热度");
+        init_popularity($btih);
+    }
+    
+    return update_download_popularity($res, $ctime);
+}
+
+
+/**
+ * 给定一个 DHT announce peer 发生时间，更新指定资源的热度
+ * 
+ * 该方法已弃用，但注意，在删除该方法之前，请转移该方法中关于热度计算算法的说明，因为 update_download_popularity 函数使用了相同的算法，并且没有重复算法说明。如果要删除此函数，请记得将算法说明移动到 update_download_popularity 函数中.
  * 
  * @param array    当前资源数据
- * @param int       在该参数指定的时刻，我们记录了一次 DHT 网络中关于此资源的 announce_peer 消息，于是需要更新 b_resource 表中的缓存
+ * @param int      在该参数指定的时刻，我们记录了一次 DHT 网络中关于此资源的 announce_peer 消息，于是需要更新 b_resource 表中的缓存
  */
-function update_popularity($res, $ts) {
+function update_dht_popularity($res, $ts) {
     global $POPULARITY_HALFLIFE_DAYS;
     
     /**
@@ -514,6 +595,49 @@ function update_popularity($res, $ts) {
 }
 
 /**
+ * 给定一个下载发生的时间，更新指定资源的热度。
+ * 
+ * 该函数的算法类似 update_dht_popularity，但使用 b_download_log 表记录的下载信息来辅助计算，其算法与 update_dht_popularity 中的算法相同，算法的具体说明可参考 update_dht_popularity 函数
+ * 
+ * @param array    当前资源数据
+ * @param int      在该参数指定的时刻，发生了一次下载，于是需要更新 b_resource 表中的缓存
+ */
+function update_download_popularity($res, $ts) {
+    global $POPULARITY_HALFLIFE_DAYS;
+    
+    /// 0. 检查本次下载是否是一次有效下载（相同的 ip 和 useragent 在 10min 内对同一个资源的下载记录视为无效记录）
+    $ip = db_escape(get_ip());
+    $useragent = db_escape(get_useragent());
+    
+    $sql = "SELECT * FROM b_download_log WHERE ctime>{$ts} - 600 AND ctime<{$ts} AND btih=UNHEX('{$res['btih']}') AND ip='{$ip}' AND useragent='{$useragent}' LIMIT 1";
+    $result = db_query($sql);
+    if (!$result) {
+        LOGW("数据库查询出错");
+        return FALSE;
+    }
+    if ($result->num_rows > 0) {
+        /// 这是一次重复下载，不会更新热度
+        //LOGD("这是一次重复下载，不会更新热度");
+        returN TRUE;
+    }
+    
+    
+    /// 1. 计算热度
+    $days_elapsed = ($ts - $res['pmtime']) / 86400;
+    $popularity = $res['popularity'] * pow(2, -1 * ($days_elapsed / $POPULARITY_HALFLIFE_DAYS));
+    $popularity += 1;
+    
+    
+    /// 2. 更新数据库
+    //LOGD("更新资源 {$res['title']}({$res['btih']}) 的热度为 ${popularity}");
+    
+    $ts = (int)$ts;
+    $sql = "UPDATE b_resource SET popularity={$popularity}, pmtime={$ts} WHERE btih='{$res['btih']}'";
+    return db_query($sql);   
+}
+
+
+/**
  * 重新（初始化）计算一个资源的热度
  */
 function init_popularity($btih) {
@@ -528,7 +652,7 @@ function init_popularity($btih) {
     
     /// 1. 查询数据
     $ts = time() - $POPULARITY_HALFLIFE_DAYS * 20 * 86400;  /// 只查询 20 个半衰期之内的数据，避免数据量过大
-    $sql = "SELECT node_id, ctime FROM b_dht_log WHERE btih=UNHEX('{$btih}') AND ctime>${ts} ORDER BY ctime ASC";
+    $sql = "SELECT ip, useragent, ctime FROM b_download_log WHERE btih=UNHEX('{$btih}') AND ctime>${ts} ORDER BY ctime ASC";
     $result = db_query($sql);
     if (!$result) {
         LOGW("数据库查询出错");
@@ -536,12 +660,13 @@ function init_popularity($btih) {
     }
     
     $popularity = 0;
-    $nodes = [];
+    $ips = [];
+    $uas = [];
     $pmtime = time();
     
     while ($row = $result->fetch_assoc()) {
-        if (isset($nodes[$row['node_id']]) && ($row['ctime'] - $nodes[$row['node_id']]['ctime'] < 60)) {
-            /// 1 分钟之内的相同 node_id 请求的相同的资源认为是同一次下载，不予记录
+        if (isset($ips[$row['ip']]) && isset($uas[$row['useragent']]) && ($row['ctime'] - $ips[$row['ip']]['ctime'] < 60)) {
+            /// 1 分钟之内的 IP 相同且 UserAgent 相同的请求认为是同一次下载，不予记录
             /// 什么都不用做
         }
         else {
@@ -550,7 +675,8 @@ function init_popularity($btih) {
             $pmtime = $row['ctime'];
         }
         
-        $nodes[$row['node_id']] = $row;
+        $ips[$row['ip']] = $row;
+        $uas[$row['useragent']] = $row;
     }
     
     
@@ -572,8 +698,12 @@ function db_query($sql) {
     global $DB_USER;
     global $DB_PASSWORD;
     global $DB_DATABASE;
-        
+    
+    //$t1 = microtime(TRUE);
     $result = $mysqli->query($sql);
+    //$elapsed = microtime(TRUE) - $t1;
+    //LOGW("SQL 查询耗时 $elapsed 秒: {$sql}");
+    
     if (!$result) {
         LOGN("第一次查询 MySQL 失败，重试后准备继续: " . $mysqli->error . ". SQL: ${sql}");
         
@@ -597,15 +727,25 @@ function db_query($sql) {
     return $result;
 }
 
+/**
+ * SQL 转义
+ */
+function db_escape($str) {
+    global $mysqli;
+    return $mysqli->real_escape_string($str);
+}
+
 
 /**
- * 到原始网站去将粽子文件下载回本地
+ * 到原始网站去将种子文件下载回本地
  * 
  * @param string    BTIH
  * @param int       错误代码，发生错误时使用此错误代码表明错误：0 表示成功，-1 表示传入的 btih 非法，-2 表示源网站返回 404，-3 表示无法获取原始种子下载地址，-4 表示 cURL 发生错误
  * @return string   成功时返回种子文件保存的地址，失败时返回 FALSE
  */
 function download_torrent($btih, &$err) {
+    global $USER_AGENT;
+    
     /// 检查 btih 合法性，btih 应该是一个长度为 40 的哈希字符串
     $ret = preg_match('/^[0-9a-z]{40}$/', $btih);
     if (!$ret) {

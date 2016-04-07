@@ -5,12 +5,14 @@ require_once('indexer_dmhy.php');
 
 $btih = isset($_GET['btih']) ? $_GET['btih'] : '';
 
-$path = get_torrent_path($btih);
+$path = get_torrent_relative_path($btih);
 
 
 /// 0. 种子已保存到本地，直接返回种子文件，并结束
 if (file_exists($path)) {
     $ua = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+    
+    logDownload($btih);
     
     if ($RSSOWL_WORKAROUND != TRUE || preg_match('/rssowl/i', $ua) <= 0) {
         /// 直接将用户重定向到种子地址
@@ -21,6 +23,7 @@ if (file_exists($path)) {
         @ob_clean();
         header("Content-Disposition: attachment; filename={$btih}.torrent");
         header('Content-Type: application/x-bittorrent');
+        
         echo file_get_contents($path);
     }
     
@@ -71,6 +74,8 @@ if (!$path || mime_content_type($path) != 'application/x-bittorrent') {
 header("Content-Disposition: attachment; filename={$btih}.torrent");
 header('Content-Type: application/x-bittorrent');
 ob_clean();
-echo $content;
+
+logDownload($btih);
+echo file_get_contents($path);
 
 ?>
