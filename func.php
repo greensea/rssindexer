@@ -808,7 +808,7 @@ function download_torrent($btih, &$err) {
     }
 
 
-    LOGI("保存种子“{$btih}”，并将用户跳转到下载地址");
+    LOGI("保存种子“{$btih}”");
     $path = archive_torrent($content, $btih);
     
     return $path;
