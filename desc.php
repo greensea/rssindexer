@@ -20,6 +20,10 @@ $res = $result->fetch_assoc();
 if (!$res) {
     die('资源不存在');
 }
+
+$TIPS[] = '输入关键词';
+shuffle($TIPS);
+$tip = array_pop($TIPS);
 ?>
 
   <head>
