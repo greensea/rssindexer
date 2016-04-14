@@ -19,10 +19,6 @@ if (!isset($_GET['page']) && isset($_GET['kw'])) {
     logSearch($kw);
 }
 
-
-$TIPS[] = '输入关键词';
-shuffle($TIPS);
-$tip = array_pop($TIPS);
 ?>
 
   <head>

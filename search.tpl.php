@@ -1,4 +1,9 @@
 <?php
+/// 获取搜索框提示
+$TIPS[] = '输入关键词';
+shuffle($TIPS);
+$tip = array_pop($TIPS);
+
 /// 获取热门搜索关键字
 $popular_kws = get_popular_kws(0, 7);
 foreach ($popular_kws as $k => $v) {
