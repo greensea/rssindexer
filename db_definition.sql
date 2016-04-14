@@ -1,3 +1,8 @@
+--
+-- Database: `rssindexer`
+--
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `b_dht_log`
@@ -9,6 +14,47 @@ CREATE TABLE `b_dht_log` (
   `btih` binary(20) NOT NULL,
   `ctime` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `b_download_log`
+--
+
+CREATE TABLE `b_download_log` (
+  `log_id` bigint(20) NOT NULL,
+  `btih` binary(20) NOT NULL,
+  `ctime` int(11) NOT NULL,
+  `ip` varchar(15) COLLATE utf8_general_ci NOT NULL,
+  `useragent` varchar(4096) COLLATE utf8_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='种子下载记录表';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `b_keyword_log`
+--
+
+CREATE TABLE `b_keyword_log` (
+  `log_id` bigint(20) NOT NULL,
+  `ip` varchar(15) COLLATE utf8_general_ci NOT NULL,
+  `kw` varchar(256) COLLATE utf8_general_ci NOT NULL,
+  `ctime` int(11) NOT NULL,
+  `useragent` varchar(4096) COLLATE utf8_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='记录用户搜索的关键词';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `b_keyword_popularity`
+--
+
+CREATE TABLE `b_keyword_popularity` (
+  `popularity_id` int(11) NOT NULL,
+  `kw` varchar(256) COLLATE utf8_general_ci NOT NULL,
+  `popularity` double NOT NULL,
+  `pmtime` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='关键词热度表';
 
 -- --------------------------------------------------------
 
@@ -40,7 +86,30 @@ CREATE TABLE `b_resource` (
 --
 ALTER TABLE `b_dht_log`
   ADD PRIMARY KEY (`log_id`),
+  ADD KEY `btih` (`btih`,`ctime`) USING BTREE,
+  ADD KEY `ctime` (`ctime`);
+
+--
+-- Indexes for table `b_download_log`
+--
+ALTER TABLE `b_download_log`
+  ADD PRIMARY KEY (`log_id`),
   ADD KEY `btih` (`btih`,`ctime`) USING BTREE;
+
+--
+-- Indexes for table `b_keyword_log`
+--
+ALTER TABLE `b_keyword_log`
+  ADD PRIMARY KEY (`log_id`),
+  ADD KEY `kw` (`kw`(255));
+
+--
+-- Indexes for table `b_keyword_popularity`
+--
+ALTER TABLE `b_keyword_popularity`
+  ADD PRIMARY KEY (`popularity_id`),
+  ADD UNIQUE `kw` (`kw`(255)) USING HASH,
+  ADD KEY `popularity` (`popularity`,`pmtime`) USING BTREE;
 
 --
 -- Indexes for table `b_resource`
@@ -61,9 +130,24 @@ ALTER TABLE `b_resource`
 -- AUTO_INCREMENT for table `b_dht_log`
 --
 ALTER TABLE `b_dht_log`
-  MODIFY `log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT for table `b_download_log`
+--
+ALTER TABLE `b_download_log`
+  MODIFY `log_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT for table `b_keyword_log`
+--
+ALTER TABLE `b_keyword_log`
+  MODIFY `log_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT for table `b_keyword_popularity`
+--
+ALTER TABLE `b_keyword_popularity`
+  MODIFY `popularity_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT for table `b_resource`
 --
 ALTER TABLE `b_resource`
-  MODIFY `resource_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `resource_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
