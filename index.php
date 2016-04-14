@@ -11,19 +11,18 @@ $kw = trim($kw);
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
 $page = max($page, 1);
 
-$result = array();
-if ($kw == '') {
-    $result = search($kw, ($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
-}
-else {
-    $result = search($kw, ($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
+$result = search($kw, ($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
+
+
+/// 如果没有传入 page 参数但传入了 kw 参数，则说明这是一次搜索
+if (!isset($_GET['page']) && isset($_GET['kw'])) {
+    logSearch($kw);
 }
 
 
 $TIPS[] = '输入关键词';
 shuffle($TIPS);
 $tip = array_pop($TIPS);
-
 ?>
 
   <head>
@@ -55,27 +54,17 @@ $tip = array_pop($TIPS);
         </div>
       </div>
       
-      <div class="container-fluid">
-      <form action="" method="get" role="form" style="margin-top: 2em;">
-        <div class="form-group">
-            <div class="col-sm-5 col-sm-offset-3">
-                <input class="form-control" type="text" name="kw" value="<?php echo htmlspecialchars(@$_GET['kw']);?>" placeholder="<?php echo htmlspecialchars($tip);?>" />
-            </div>
-            <button class="btn btn-primary" type="submit">搜索</button>
-        </div>
-      </form>
-      </div>
-
+      <?php require_once('search.tpl.php');?>
 
         
-      <div class="container-fluid text-primary text-center text-large" style="font-size: 1.2em;">
+      <div class="container-fluid text-primary text-center text-large" style="font-size: 1.2em; margin-top: 1.5em;">
       <?php
       if ($kw == '') {
           echo '最新更新的资源列表';
       }
       else {
           $str = htmlspecialchars($_GET['kw']);
-          echo "“{$str}”的搜索结果（共 " . $cnt . " 个）";
+          echo "“<strong>{$str}</strong>”的搜索结果（共 " . $cnt . " 个）";
       }
       ?>
       </div>

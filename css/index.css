@@ -12,13 +12,27 @@
     font-size: 1.2em;
 }
 
+.popular-keywords {
+    text-align: center;
+    margin-top: -0.5em;
+    opacity: 0.8;
+    margin-bottom: 0.5em;
+}
+.popular-keywords a {
+    margin-left: 0.5em;
+}
+
+
 .search {
     margin-top: 2em;
+    margin-bottom: 1em;
 }
 .search-result-sub-title {
     font-size: 1.2em;
     font-weight: bold;
+    margin-top: 1em;
 }
+
 
 table th {
     text-align: center;
@@ -84,3 +98,11 @@ table td.popularity {
     padding: 0 0.25em;
 }
 
+/** popularkw.php 页面的样式 **/
+table.popular-kw-list {
+    width: auto;
+    margin: 0 auto;
+}
+table.popular-kw-list td {
+    text-align: center;
+}

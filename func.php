@@ -259,6 +259,47 @@ function get_by_btih($btih) {
     }
 }
 
+/**
+ * 获取当前最热门的搜索关键字
+ * 
+ * @param int   获取的关键字数量，传入 NULL 表示获取所有记录
+ * @param int   热度限制
+ */
+function get_popular_kws($offset = 0, $limit = 5, &$cnt = '__DO_NOT_COUNT__') {
+    $offset = (int)$offset;
+    $limit = (int)$limit;
+    
+    $sql = "SELECT * FROM b_keyword_popularity ORDER BY popularity DESC, pmtime DESC LIMIT {$offset},{$limit}";
+    $res = db_query($sql);
+    if (!$res) {
+        LOGW("数据库查询出错");
+        return [];
+    }
+    
+    
+    $ret = [];
+    while ($row = $res->fetch_assoc()) {
+        $ret[] = $row;
+    }
+    
+    
+    /// 计算行数
+    if ($cnt != '__DO_NOT_COUNT__') {
+        $sql = "SELECT COUNT(*) AS cnt FROM b_keyword_popularity";
+        $result = db_query($sql);
+        if (!$result) {
+            LOGE("数据库查询出错");
+            die();
+        }
+        else {
+            $row = $result->fetch_assoc();
+            $cnt = $row['cnt'];
+        }
+    }
+    
+    return $ret;
+}
+
 
 /**
  * 获取当前用户的 IP 地址
@@ -538,9 +579,41 @@ function logDownload($btih) {
 
 
 /**
+ * 记录一个用户搜索操作
+ */
+function logSearch($kw) {
+    $kw = trim($kw);
+    if ($kw == '') {
+        return TRUE;
+    }
+    if (mb_strlen($kw) > 256) {
+        LOGN("关键字“{$kw}”长度超过 256 个字，不会记录此关键字");
+        return FALSE;
+    }
+    
+    $kw_qs = db_escape($kw);
+    $ip = db_escape(get_ip());
+    $useragent = db_escape(get_useragent());
+    $ts = time();
+    
+    $sql = "INSERT INTO b_keyword_log (ctime, ip, useragent, kw) VALUES ($ts, '{$ip}', '{$useragent}', '{$kw_qs}')";
+    
+    $result = db_query($sql);
+    if (!$result) {
+        LOGE("数据库查询失败");
+        return FALSE;
+    }
+    
+
+    return update_kw_popularity($kw, $ts);   
+}
+
+
+
+/**
  * 给定一个 DHT announce peer 发生时间，更新指定资源的热度
  * 
- * 该方法已弃用，但注意，在删除该方法之前，请转移该方法中关于热度计算算法的说明，因为 update_download_popularity 函数使用了相同的算法，并且没有重复算法说明。如果要删除此函数，请记得将算法说明移动到 update_download_popularity 函数中.
+ * 该方法已弃用，但注意，在删除该方法之前，请转移该方法中关于热度计算算法的说明，因为 update_download/kw_popularity 函数使用了相同的算法，并且没有重复算法说明。如果要删除此函数，请记得将算法说明移动到 update_download/kw_popularity 函数中.
  * 
  * @param array    当前资源数据
  * @param int      在该参数指定的时刻，我们记录了一次 DHT 网络中关于此资源的 announce_peer 消息，于是需要更新 b_resource 表中的缓存
@@ -635,6 +708,73 @@ function update_download_popularity($res, $ts) {
     $sql = "UPDATE b_resource SET popularity={$popularity}, pmtime={$ts} WHERE btih='{$res['btih']}'";
     return db_query($sql);   
 }
+
+
+/**
+ * 给定一个搜索发生的时间，更新指定关键词的热度
+ * 
+ * 该函数的算法类似 update_dht_popularity，但使用 b_download_log 表记录的下载信息来辅助计算，其算法与 update_dht_popularity 中的算法相同，算法的具体说明可参考 update_dht_popularity 函数
+ * 
+ * @param array    当前资源数据
+ * @param int      在该参数指定的时刻，发生了一次下载，于是需要更新 b_resource 表中的缓存
+ */
+function update_kw_popularity($kw, $ts) {
+    global $POPULARITY_HALFLIFE_DAYS;
+    
+    /// 0. 检查本次下载是否是一次有效下载（相同的 ip 和 useragent 在 10min 内对同一个关键字的搜索记录视为无效记录）
+    $ip = db_escape(get_ip());
+    $useragent = db_escape(get_useragent());
+    $kw_qs = db_escape($kw);
+    
+    $sql = "SELECT * FROM b_keyword_log WHERE ctime>{$ts} - 600 AND ctime<{$ts} AND kw='{$kw_qs}' AND ip='{$ip}' AND useragent='{$useragent}' LIMIT 1";
+    $result = db_query($sql);
+    if (!$result) {
+        LOGW("数据库查询出错");
+        return FALSE;
+    }
+    if ($result->num_rows > 0) {
+        /// 这是一次重复搜索，不会更新热度
+        LOGD("这是一次重复搜索，不会更新热度");
+        returN TRUE;
+    }
+    
+    
+    /// 1. 视情况初始化热度
+    $result = db_query("SELECT * FROM b_keyword_popularity WHERE kw='{$kw_qs}'");
+    $res = NULL;
+    if ($result->num_rows == 0) {
+        $sql = "INSERT INTO b_keyword_popularity (kw, pmtime, popularity) VALUES ('{$kw_qs}', $ts, 0)";
+        $ret = db_query($sql);
+        if (!$ret) {
+            LOW("数据库查询出错");
+            return FALSE;
+        }
+        $res = [
+            'pmtime' => $ts,
+            'popularity' => 0,
+            'kw' => $kw
+        ];
+    }
+    else {
+        $res = $result->fetch_assoc();
+    }
+    
+    
+    
+    /// 2. 计算热度
+    $days_elapsed = ($ts - $res['pmtime']) / 86400;
+    $popularity = $res['popularity'] * pow(2, -1 * ($days_elapsed / $POPULARITY_HALFLIFE_DAYS));
+    $popularity += 1;
+    
+    
+    /// 3. 更新数据库
+    //LOGD("更新搜索词 {$kw} 的热度为 ${popularity}");
+    
+    $ts = (int)$ts;
+    $sql = "UPDATE b_keyword_popularity SET popularity={$popularity}, pmtime={$ts} WHERE kw='{$kw_qs}'";
+    return db_query($sql);   
+}
+
 
 
 /**
