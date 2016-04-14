@@ -268,8 +268,21 @@ function get_by_btih($btih) {
 function get_popular_kws($offset = 0, $limit = 5, &$cnt = '__DO_NOT_COUNT__') {
     $offset = (int)$offset;
     $limit = (int)$limit;
+    global $POPULARITY_HALFLIFE_DAYS;
     
-    $sql = "SELECT * FROM b_keyword_popularity ORDER BY popularity DESC, pmtime DESC LIMIT {$offset},{$limit}";
+    $POPULARITY_HALFLIFE_DAYS = (double)$POPULARITY_HALFLIFE_DAYS;
+    
+    /**
+     * 取查询条件 popularity>0.0005，不显示热门度太低的关键字（实际热度会显示为 0.000 热门度的关键字）
+     * 另取查询条件 LOG(2, 0.0049999999) < -1 * (UNIX_TIMESTAMP() - pmtime) / 86400 / POPULARITY_HALFLIFE_DAYS)，不显示实际热度会显示为 0.000 的资源。该条件的意思是，假设一个资源的 pmtime 为 1，那么经过 LOG(2, 0.0049999999) 个半衰期后，该资源的计算出来的热度将显示为 0.000
+     *  为使用索引，该查询条件变形为 pmtime > 86400 * POPULARITY_HALFLIFE_DAYS * LOG(2, 0.0049999999) + UNIX_TIMESTAMP()
+     */
+    $sql = "SELECT *, popularity * POW(2, -1 * (UNIX_TIMESTAMP() - pmtime) / 86400 / $POPULARITY_HALFLIFE_DAYS) AS popularity2
+    FROM b_keyword_popularity 
+    WHERE popularity>0.0005
+    AND pmtime > 86400 * $POPULARITY_HALFLIFE_DAYS * LOG(2, 0.0049999999) + UNIX_TIMESTAMP()
+    ORDER BY popularity2 DESC, pmtime DESC LIMIT {$offset},{$limit}";
+    
     $res = db_query($sql);
     if (!$res) {
         LOGW("数据库查询出错");
@@ -285,7 +298,60 @@ function get_popular_kws($offset = 0, $limit = 5, &$cnt = '__DO_NOT_COUNT__') {
     
     /// 计算行数
     if ($cnt != '__DO_NOT_COUNT__') {
-        $sql = "SELECT COUNT(*) AS cnt FROM b_keyword_popularity";
+        $sql = "SELECT COUNT(*) AS cnt FROM b_keyword_popularity
+        WHERE popularity>0.0005
+        AND LOG(2, 0.0049999999) < -1 * (UNIX_TIMESTAMP() - pmtime) / 86400 / $POPULARITY_HALFLIFE_DAYS";
+        
+        $result = db_query($sql);
+        if (!$result) {
+            LOGE("数据库查询出错");
+            die();
+        }
+        else {
+            $row = $result->fetch_assoc();
+            $cnt = $row['cnt'];
+        }
+    }
+    
+    return $ret;
+}
+
+
+/**
+ * 获取最受欢迎的资源
+ */
+function get_popular_resources($offset = 0, $limit = 50, &$cnt = '__DO_NOT_COUNT__') {
+    $offset = (int)$offset;
+    $limit = (int)$limit;
+    global $POPULARITY_HALFLIFE_DAYS;
+    
+    $POPULARITY_HALFLIFE_DAYS = (double)$POPULARITY_HALFLIFE_DAYS;
+    
+    /// 此处的两个查询条件的说明详见 get_popular_kws 函数中的注释
+    $sql = "SELECT *, popularity * POW(2, -1 * (UNIX_TIMESTAMP() - pmtime) / 86400 / $POPULARITY_HALFLIFE_DAYS) AS popularity2
+    FROM b_resource
+    WHERE popularity >= 0.0005
+    AND pmtime > 86400 * $POPULARITY_HALFLIFE_DAYS * LOG(2, 0.0049999999) + UNIX_TIMESTAMP()
+    ORDER BY popularity2 DESC, pmtime DESC LIMIT {$offset},{$limit}";
+    
+    $res = db_query($sql);
+    if (!$res) {
+        LOGW("数据库查询出错");
+        return [];
+    }
+    
+    
+    $ret = [];
+    while ($row = $res->fetch_assoc()) {
+        $ret[] = $row;
+    }
+    
+    
+    /// 计算行数
+    if ($cnt != '__DO_NOT_COUNT__') {
+        $sql = "SELECT COUNT(*) AS cnt FROM b_resource WHERE
+        popularity >= 0.0005
+        AND pmtime > 86400 * $POPULARITY_HALFLIFE_DAYS * LOG(2, 0.0049999999) + UNIX_TIMESTAMP()";
         $result = db_query($sql);
         if (!$result) {
             LOGE("数据库查询出错");

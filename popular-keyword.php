@@ -52,10 +52,8 @@ $result = get_popular_kws(($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
     <?php
     foreach ($result as $res) {
         $popularity = '未知';
-        if ($res['popularity'] >= 0) {
-            $decays = (time() - $res['pmtime']) / 86400 / $POPULARITY_HALFLIFE_DAYS;
-            $popularity = $res['popularity'] * pow(2, -1 * $decays);
-            $popularity = sprintf('%0.3lf', $popularity);
+        if ($res['popularity2'] >= 0) {
+            $popularity = sprintf('%0.3f', round($res['popularity2'], 3));
         }
     ?>
         <tr>
@@ -91,13 +89,13 @@ $result = get_popular_kws(($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
             $pages = array_unique($pages);
             sort($pages);
             ?>
-            <li><a href="popularkw.php?page=1">首页</a></li>
+            <li><a href="?page=1">首页</a></li>
             
             <?php foreach ($pages as $i) { ?>
-            <li <?php if ($i == $page) { ?>class="active"<?php } ?>><a href="popularkw.php?page=<?php echo $i;?>"><?php echo $i;?></a></li>    
+            <li <?php if ($i == $page) { ?>class="active"<?php } ?>><a href="?page=<?php echo $i;?>"><?php echo $i;?></a></li>    
             <?php } ?>
             
-            <li><a href="popularkw.php?page=<?php echo $page_count;?>">末页</a></li>
+            <li><a href="?page=<?php echo $page_count;?>">末页</a></li>
           </ul>
         </nav>
     </div>

@@ -7,12 +7,14 @@ $tip = array_pop($TIPS);
 /// 获取热门搜索关键字
 $popular_kws = get_popular_kws(0, 7);
 foreach ($popular_kws as $k => $v) {
+    /*
     $popularity = 0;
     if ($v['popularity'] >= 0) {
         $decays = (time() - $v['pmtime']) / 86400 / $POPULARITY_HALFLIFE_DAYS;
         $popularity = $v['popularity'] * pow(2, -1 * $decays);
     }
-    if ($popularity < 1.001) {
+    */
+    if ($v['popularity2'] < 1.001) {
         unset($popular_kws[$k]);
     }
 }
