@@ -19,10 +19,10 @@
     <?php
     if ($BAIDU_STAT_ID != '') {
         if (!$CSP_NONCE) {
-            $CSP_NONCE = rand();
+            $CSP_NONCE = mt_rand() . microtime(TRUE);
         }
     ?>
-        <script nonce="<?php echo $CSP_NONCE?>">
+        <script nonce="<?php echo $CSP_NONCE;?>">
         var _hmt = _hmt || [];
         (function() {
           var hm = document.createElement("script");
@@ -31,4 +31,22 @@
           s.parentNode.insertBefore(hm, s);
         })();
         </script>
+    <?php } ?>
+    
+    <?php 
+    if ($GOOGLE_ANALYTICS_ID != '') {
+        if (!$CSP_NONCE) {
+            $CSP_NONCE = mt_rand() . microtime(TRUE);
+        }
+    ?>
+    <script nonce="<?php echo $CSP_NONCE;?>">
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', '<?php echo $$GOOGLE_ANALYTICS_ID;?>', 'auto');
+      ga('send', 'pageview');
+
+    </script>
     <?php } ?>

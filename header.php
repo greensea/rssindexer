@@ -17,7 +17,7 @@ if (!$mysqli) {
 }
 $mysqli->query("set NAMES 'utf8'");
 
-$CSP_NONCE = uniqid() . 'X' . rand();
+$CSP_NONCE = uniqid() . 'X' . mt_rand();
 
 
 
