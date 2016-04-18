@@ -47,7 +47,8 @@ $result = get_popular_resources(($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
         <tr class="info">
             <th style="min-width: 6em;"><abbr title="根据近期下载次数计算而得">热度</abbr></th>
             <th>资源</th>
-            <th>最后一次被下载的时间</th>
+            <th>发布时间</th>
+            <th>最后被下载时间</th>
         </tr>
     <?php
     foreach ($result as $res) {
@@ -66,6 +67,7 @@ $result = get_popular_resources(($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
             
             
 
+            <td><?php echo date('Y-m-d H:i:s', $res['pubDate']);?></td>
             <td><?php echo date('Y-m-d H:i:s', $res['pmtime']);?></td>
         </tr>
         
