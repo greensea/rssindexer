@@ -68,8 +68,11 @@ $tip = array_pop($TIPS);
           <div class="col-sm-12">
             <div class="alert content">
               <h4><span class="text-primary">内容介绍</span></h4>
-              
-              <?php echo $res['description'];?>
+              <?php
+              $description = $res['description'];
+              $description = str_replace('<a ', '<a rel="nofollow" ', $description);
+              echo $description;
+              ?>
             </div>
           </div>
           
