@@ -12,6 +12,7 @@ $(document).ready(function() {
                 console.log(d.message);
                 
                 $(".files-loading").text("无法加载文件列表：" + d.message);
+                $(".files-loading").addClass("text-danger");
                 
                 return;
             }
