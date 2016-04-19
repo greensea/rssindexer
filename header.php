@@ -23,4 +23,11 @@ $CSP_NONCE = uniqid() . 'X' . mt_rand();
 
 require_once(__DIR__ . '/func.php');
 
+function ob_i18n_handler($in) {
+    $pattern = <<<EOF
+(<([a-zA-Z]+) [^<]*rel=["|']i18n["|'][^>]*>)(.+)<\/\2>/gsU'
+EOF;
+    $matches = NULL;
+    preg_match($pattern, $in, $matches);
+}
 ?>
