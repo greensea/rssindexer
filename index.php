@@ -35,7 +35,9 @@ if (!isset($_GET['page']) && isset($_GET['kw'])) {
     <script type="text/javascript" src="js/index.js" async defer></script>
   </head>
   <body>
-      
+     
+<div class="alert alert-warning" style="text-align: center;">因服务器提供商误操作导致数据丢失，我们丢失了6月9日以前的所有数据，目前暂时无法恢复。6月9日之后的数据都是正常的，请大家放心使用</div>
+ 
       <?php require_once('nav.tpl.php'); ?>
       
       <div class="container-fluid">
