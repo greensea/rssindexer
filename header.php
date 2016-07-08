@@ -15,7 +15,7 @@ if (!$mysqli) {
     LOGE('无法创建 MySQL 连接: ' . $mysqli->error);
     die();
 }
-$mysqli->query("set NAMES 'utf8'");
+$mysqli->query("set NAMES 'utf8mb4'");
 
 $CSP_NONCE = uniqid() . 'X' . mt_rand();
 

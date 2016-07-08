@@ -25,9 +25,9 @@ CREATE TABLE `b_download_log` (
   `log_id` bigint(20) NOT NULL,
   `btih` binary(20) NOT NULL,
   `ctime` int(11) NOT NULL,
-  `ip` varchar(15) COLLATE utf8_general_ci NOT NULL,
-  `useragent` varchar(4096) COLLATE utf8_general_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='种子下载记录表';
+  `ip` varchar(15) COLLATE utf8mb4_general_ci NOT NULL,
+  `useragent` varchar(4096) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_general_ci COMMENT='种子下载记录表';
 
 -- --------------------------------------------------------
 
@@ -37,11 +37,11 @@ CREATE TABLE `b_download_log` (
 
 CREATE TABLE `b_keyword_log` (
   `log_id` bigint(20) NOT NULL,
-  `ip` varchar(15) COLLATE utf8_general_ci NOT NULL,
-  `kw` varchar(256) COLLATE utf8_general_ci NOT NULL,
+  `ip` varchar(15) COLLATE utf8mb4_general_ci NOT NULL,
+  `kw` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
   `ctime` int(11) NOT NULL,
-  `useragent` varchar(4096) COLLATE utf8_general_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='记录用户搜索的关键词';
+  `useragent` varchar(4096) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_general_ci COMMENT='记录用户搜索的关键词';
 
 -- --------------------------------------------------------
 
@@ -51,10 +51,10 @@ CREATE TABLE `b_keyword_log` (
 
 CREATE TABLE `b_keyword_popularity` (
   `popularity_id` int(11) NOT NULL,
-  `kw` varchar(256) COLLATE utf8_general_ci NOT NULL,
+  `kw` varchar(256) COLLATE utf8mb4_general_ci NOT NULL,
   `popularity` double NOT NULL,
   `pmtime` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='关键词热度表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_general_ci COMMENT='关键词热度表';
 
 -- --------------------------------------------------------
 
@@ -101,7 +101,7 @@ ALTER TABLE `b_download_log`
 --
 ALTER TABLE `b_keyword_log`
   ADD PRIMARY KEY (`log_id`),
-  ADD KEY `kw` (`kw`(255));
+  ADD KEY `kw` (`kw`(191));
 
 --
 -- Indexes for table `b_keyword_popularity`
