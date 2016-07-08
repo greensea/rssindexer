@@ -20,6 +20,7 @@
 }
 .popular-keywords a {
     margin-left: 0.5em;
+    display: inline-block;
 }
 
 
