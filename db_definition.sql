@@ -108,7 +108,7 @@ ALTER TABLE `b_keyword_log`
 --
 ALTER TABLE `b_keyword_popularity`
   ADD PRIMARY KEY (`popularity_id`),
-  ADD UNIQUE `kw` (`kw`(255)) USING HASH,
+  ADD UNIQUE `kw` (`kw`(191)) USING HASH,
   ADD KEY `popularity` (`popularity`,`pmtime`) USING BTREE;
 
 --
@@ -117,9 +117,9 @@ ALTER TABLE `b_keyword_popularity`
 ALTER TABLE `b_resource`
   ADD PRIMARY KEY (`resource_id`),
   ADD UNIQUE KEY `btih` (`btih`) USING BTREE,
-  ADD KEY `guid` (`guid`(255)),
-  ADD KEY `link` (`link`(255)),
-  ADD KEY `magnet` (`magnet`(255)),
+  ADD KEY `guid` (`guid`(191)),
+  ADD KEY `link` (`link`(191)),
+  ADD KEY `magnet` (`magnet`(191)),
   ADD KEY `pubDate` (`pubDate`);
 
 --
