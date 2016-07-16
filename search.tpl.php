@@ -22,7 +22,7 @@ foreach ($popular_kws as $k => $v) {
 <div class="container-fluid search-block">
     <form action="/" method="get" role="form" style="margin-top: 2em;">
         <div class="form-group">
-            <div class="col-sm-5 col-sm-offset-3">
+            <div class="col-sm-5 col-sm-offset-3 col-xs-10">
                 <input class="form-control" type="text" name="kw" value="<?php echo htmlspecialchars(@$_GET['kw']);?>" placeholder="<?php echo htmlspecialchars($tip);?>" />
             </div>
             <button class="btn btn-primary" type="submit">搜索</button>
