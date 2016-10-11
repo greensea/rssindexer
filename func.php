@@ -1,7 +1,4 @@
 <?php
-require_once('header.php');
-
-
 /// 打印日志到指定的文件中
 function LOGS($log) {
     global $LOG_PATH;
@@ -61,7 +58,9 @@ function LOGD($log) {
 function archive_raw($content) {
     $dir = date('Y/m/d/');
     
-    $dir = "archive/${dir}";
+    $dir = "/archive/${dir}";
+    $dir = __DIR__ . $dir;
+
     if (!is_dir($dir)) {
         mkdir($dir, 0755, TRUE);
     }
