@@ -9,7 +9,7 @@
     <title>关于本站 - KOTOMI RSS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
     
     
     <link rel="alternate" type="application/rss+xml" title="KOTOMI RSS 页面" href="//moe4sale.in/rss.xml" />
