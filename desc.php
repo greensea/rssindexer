@@ -21,6 +21,11 @@ if (!$res) {
     die('资源不存在');
 }
 
+/// 版权通告临时修改
+if (in_array($btih, $ABUSES)) {
+    die('因收到版权方要求删除的请求，该资源已经被删除');
+}
+
 $TIPS[] = '输入关键词';
 shuffle($TIPS);
 $tip = array_pop($TIPS);

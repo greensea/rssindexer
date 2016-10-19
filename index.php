@@ -90,9 +90,13 @@ if (!isset($_GET['page']) && isset($_GET['kw'])) {
             <th style="width: 4em;">源页面</th>
         </tr>
     <?php
+    $abuse = 0;
     foreach ($result as $res) {
         $btih = $res['btih'];
-        
+        if (in_array($btih, $ABUSES)) {
+            $abuse++;
+            continue;
+        }
         $link = $res['magnet'];
         if ($link == '') {
             $match;
@@ -152,7 +156,9 @@ if (!isset($_GET['page']) && isset($_GET['kw'])) {
     <?php } ?>
     </table>
     </div>
-    
+    <?php if ($abuse): ?>
+   <div class="alert alert-warning">由于收到版权方要求，<?php echo $abuse;?>个资源已经从列表中移除</div> 
+    <?php endif; ?>
     <div class="container-fluid">
         <nav class="pull-right">
           <ul class="pagination">
