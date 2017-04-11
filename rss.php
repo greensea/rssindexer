@@ -44,7 +44,13 @@ foreach ($result as $res) {
         $link = '/' . btih_seed_url($btih);
         $link = mkurl($link);
     }
-    
+
+    /// 兼容性修改：DMHY 使用了 cloudfare 的 防 DDoS 页面，cURL 很难抓取到网页，故不再对花园资源使用种子地址，转而使用 magnet 地址
+    if ($res['src'] == 'dmhy' && $res['magnet']) {
+         $link = $res['magnet'];
+    }
+
+            
     
     /**
      * 为向后兼容，对 guid 的特殊处理
