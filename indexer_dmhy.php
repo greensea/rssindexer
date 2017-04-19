@@ -82,8 +82,8 @@ class Indexer_DMHY Extends Indexer_Base {
         /// 2.2 尝试通过 webkit 获取
         LOGD("由于无法通过 cURL 获取动漫花园的源页面，尝试使用 webkit 获取");
         
-        set_time_limit(60);
-        $content = webkit_fetch_url($res['link'], "{$btih}.torrent", 60);
+        set_time_limit(120);
+        $content = webkit_fetch_url($res['link'], "{$btih}.torrent", 120);
         
         if (!$content) {
             LOGE("无法通过 webkit 抓取动漫花园的资源页面: ${res['link']}'");

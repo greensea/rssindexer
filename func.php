@@ -1041,6 +1041,10 @@ function webkit_fetch_url($url, $keyword = '', $timeout = 30) {
     );
     
     $pipes = NULL;
+    
+    $env = array_merge([
+        'PATH' => dirname($PHANTOMJS_PATH),
+    ], $_ENV);
 
     $cmd = $PHANTOMJS_PATH;
     $cmd .= ' ' . escapeshellarg($webkit_crawl);
@@ -1049,7 +1053,7 @@ function webkit_fetch_url($url, $keyword = '', $timeout = 30) {
     $cmd .= ' ' . escapeshellarg($timeout);
     
     LOGI("执行 phantomjs 命令: `{$cmd}'");
-    $process = proc_open($cmd, $descriptorspec, $pipes, '/tmp');
+    $process = proc_open($cmd, $descriptorspec, $pipes, '/tmp', $env);
 
     if (is_resource($process)) {
         stream_set_blocking ( $pipes[1] , FALSE );
