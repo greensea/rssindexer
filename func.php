@@ -1,7 +1,4 @@
 <?php
-require_once('header.php');
-
-
 /// 打印日志到指定的文件中
 function LOGS($log) {
     global $LOG_PATH;
@@ -61,7 +58,9 @@ function LOGD($log) {
 function archive_raw($content) {
     $dir = date('Y/m/d/');
     
-    $dir = "archive/${dir}";
+    $dir = "/archive/${dir}";
+    $dir = __DIR__ . $dir;
+
     if (!is_dir($dir)) {
         mkdir($dir, 0755, TRUE);
     }
@@ -1018,8 +1017,91 @@ function download_torrent($btih, &$err) {
     $path = archive_torrent($content, $btih);
     
     return $path;
-
 }
+
+
+/**
+ * 使用 webkit 内核去抓取一个网页的源码
+ * 
+ * @param url       要抓取的网页地址
+ * @param keywork   要抓取的网页地址中出现了这个关键词才会返回
+ * @param timeout   超时时间，单位：秒
+ * @return mixed    成功时返回抓取到的网页的源码，失败时返回空值
+ */
+ 
+function webkit_fetch_url($url, $keyword = '', $timeout = 30) {
+    global $PHANTOMJS_PATH;
+    
+    $webkit_crawl = __DIR__ . '/webkit_crawl.js';
+    
+    $descriptorspec = array(
+       0 => array("pipe", "r"),  // 标准输入，子进程从此管道中读取数据
+       1 => array("pipe", "w"),  // 标准输出，子进程向此管道中写入数据
+       2 => array("pipe", "w")  // 标准错误
+    );
+    
+    $pipes = NULL;
+
+    $cmd = $PHANTOMJS_PATH;
+    $cmd .= ' ' . escapeshellarg($webkit_crawl);
+    $cmd .= ' ' . escapeshellarg($url);
+    $cmd .= ' ' . escapeshellarg($keyword);
+    $cmd .= ' ' . escapeshellarg($timeout);
+    
+    LOGI("执行 phantomjs 命令: `{$cmd}'");
+    $process = proc_open($cmd, $descriptorspec, $pipes, '/tmp');
+
+    if (is_resource($process)) {
+        stream_set_blocking ( $pipes[1] , FALSE );
+        stream_set_blocking ( $pipes[2] , FALSE );
+    }
+    else {
+        LOGW("执行 phantomjs 命令失败: `{$cmd}'");
+        return FALSE;
+    }
+    
+    $output = '';
+
+    while (1) {
+        $fd_r = [$pipes[1], $pipes[2]];
+        $fd_w = [];
+        $fd_e = [];
+        
+        $changed_num = stream_select($fd_r, $fd_w, $fd_e, 1);
+        
+        if ($changed_num) {
+            foreach ($fd_r as $fd) {
+                if ($fd == $pipes[1]) {
+                    $output .= fgets($pipes[1]);
+                }
+                else if ($fd == $pipes[2]) {
+                    $line = fgets($pipes[2]);
+                    if ($line) {
+                        LOGI("phantomjs 日志: " . $line);
+                    }
+                }
+            }
+        }
+        
+        
+        /// 判断 phantomjs 是否已经执行完毕了，并视情况结束运行
+        $status = proc_get_status($process);   
+        
+        if (!$status || !$status['running']) {
+            foreach ($pipes as $pipe) {
+                fclose($pipe);
+            }
+            $ret = proc_close($process);
+            
+            LOGD("phantomjs 结束运行，退出代码是 {$status['exitcode']}");
+            break;
+        }
+    }
+
+
+    return $output;
+}
+
 
 function apiout($code, $message = NULL, $data = NULL) {
     header('Content-Type: application/json');
@@ -1039,4 +1121,5 @@ function apiout($code, $message = NULL, $data = NULL) {
     
     die();
 }
+
 ?>

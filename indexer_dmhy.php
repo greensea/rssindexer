@@ -40,6 +40,8 @@ class Indexer_DMHY Extends Indexer_Base {
 
     static public function getSrcSeedURL($btih) {
         global $USER_AGENT;
+        global $DMHY_FETCH_WORKAROUND;
+        
         
         /// 1. 从数据库中查询原始页面链接
         $res = get_by_btih($btih);
@@ -52,19 +54,59 @@ class Indexer_DMHY Extends Indexer_Base {
         LOGI("正在获取动漫花园的资源页面内容: ${res['link']}");
 
         $content = NULL;
+        $url = NULL;
 
+        /// 2.1 尝试直接通过 curl 获取
         $ch = curl_init($res['link']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_ENCODING, ''); 
         curl_setopt($ch, CURLOPT_USERAGENT, $USER_AGENT);
         $content = curl_exec($ch);
-
+        
         if (!$content) {
-            LOGE("无法抓取动漫花园的资源页面: ${res['link']}'");
+            LOGE("无法通过 cURL 抓取动漫花园的资源页面: ${res['link']}'");
+        }
+        else {
+            $url = self::getTorrentURLFromHTML($content);
+            LOGD("无法从动漫花园的 HTML 源页面中解析出 torrent 地址");
+        }
+        
+        if ($url) {
+            return $url;
+        }
+        else if (!$DMHY_FETCH_WORKAROUND) {
             return FALSE;
         }
-
-        /// 3. 解析 BT 地址
+        
+        
+        /// 2.2 尝试通过 webkit 获取
+        LOGD("由于无法通过 cURL 获取动漫花园的源页面，尝试使用 webkit 获取");
+        
+        set_time_limit(60);
+        $content = webkit_fetch_url($res['link'], "{$btih}.torrent", 60);
+        
+        if (!$content) {
+            LOGE("无法通过 webkit 抓取动漫花园的资源页面: ${res['link']}'");
+        }
+        else {
+            $url = self::getTorrentURLFromHTML($content);
+            
+            if (!$url) {
+                LOGD("无法从动漫花园的 HTML 源页面中解析出 torrent 地址");
+            }
+        }
+        
+        
+        return $url;
+    }
+    
+    
+    /**
+     * 从 HTML 源代码中获取种子下载地址
+     * 
+     * @param content   HTML 源代码内容
+     */
+    static public function getTorrentURLFromHTML($content) {
         $matches = [];
         $pattern = '/\/\/.+[a-f0-9]{40}\.torrent/';
         $ret = preg_match($pattern, $content, $matches);

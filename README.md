@@ -8,7 +8,7 @@ http://moe4sale.in
 
 ## 部署方法
 
-1. 在库目录下创建 archive 和 torrent 目录
+1. 在库目录下创建 archive 和 torrent 目录，并保证 PHP 有权读写这两个目录
 1. 创建一个网站，网站根目录就是仓库目录
 1. 创建网址重写规则：rss.php -> rss.xml
 1. 创建 CRON 任务，每隔 30 分钟（建议值）通过 PHP-CLI 在库目录下运行 indexer.php。请保证用户具有对 archive 目录的写权限
