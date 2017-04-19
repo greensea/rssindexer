@@ -118,4 +118,24 @@ $TIPS = array(
     '输入关键词',
 );
 
+
+/**
+ * 是否使用 webkit 去抓取动漫花园的网页地址。
+ * 动漫花园使用了 CloudFare 的 DDoS 保护机制，我们无法直接使用程序抓取动漫花园的资源页。
+ * 为了绕开这个保护，我们需要模拟浏览器的行为，如果开启此选项，则将使用 webkit 去抓取动漫花园的资源页内容。
+ * 注意：开启此选项需要安装 nodejs 的 phantomjs 模块。要检查安装是否成功，请在本文件目录下执行下面的命令，看看是否能够抓取到网页：
+ * 
+ * phantomjs webkit_crawl.js http://www.baidu.com baidu.com
+ * 
+ * 如果能看到百度的源代码，则说明抓取成功。
+ */
+$DMHY_FETCH_WORKAROUND = TRUE;
+
+
+/**
+ * 如果使用 webkit 去抓取动漫花园的网页地址，需要定义 phantomjs 的路径。
+ * 如果不知道 phantomjs 安装在哪里，可以先执行一次 phantomjs 命令，然后再执行 hash 命令，这样就可以看到 phantomjs 的路径了。
+ */
+$PHANTOMJS_PATH = '/usr/local/bin/phantomjs';
+
 ?>
