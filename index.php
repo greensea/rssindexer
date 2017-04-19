@@ -35,9 +35,10 @@ if (!isset($_GET['page']) && isset($_GET['kw'])) {
     <script type="text/javascript" src="js/index.js" async defer></script>
   </head>
   <body>
-     
-<div class="alert alert-danger text-center">公告：由于动漫花园使用了 CloudFare 的 DDoS 保护机制，我们无法抓取到动漫花园的种子地址，所以来自动漫花园的资源的种子可能无法下载，请换用磁力链接下载资源</div> 
 
+<!--     
+<div class="alert alert-danger text-center">公告：由于动漫花园使用了 CloudFare 的 DDoS 保护机制，我们无法抓取到动漫花园的种子地址，所以来自动漫花园的资源的种子可能无法下载，请换用磁力链接下载资源</div> 
+-->
       <?php require_once('nav.tpl.php'); ?>
       
       <div class="container-fluid">
