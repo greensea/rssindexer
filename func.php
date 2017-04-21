@@ -1031,6 +1031,8 @@ function download_torrent($btih, &$err) {
  
 function webkit_fetch_url($url, $keyword = '', $timeout = 30) {
     global $PHANTOMJS_PATH;
+    global $PHANTOMJS_COOKIES;
+    global $PHANTOMJS_DISK_CACHE;
     
     $webkit_crawl = __DIR__ . '/webkit_crawl.js';
     
@@ -1047,6 +1049,10 @@ function webkit_fetch_url($url, $keyword = '', $timeout = 30) {
     ], $_ENV);
 
     $cmd = $PHANTOMJS_PATH;
+    $cmd .= ' --cookies-file=' . escapeshellarg($PHANTOMJS_COOKIES);
+    $cmd .= ' --disk-cache-path=' . escapeshellarg($PHANTOMJS_DISK_CACHE);
+    $cmd .= ' --disk-cache=true';
+    $cmd .= ' --load-images=false';
     $cmd .= ' ' . escapeshellarg($webkit_crawl);
     $cmd .= ' ' . escapeshellarg($url);
     $cmd .= ' ' . escapeshellarg($keyword);

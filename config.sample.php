@@ -138,4 +138,14 @@ $DMHY_FETCH_WORKAROUND = TRUE;
  */
 $PHANTOMJS_PATH = '/usr/local/bin/phantomjs';
 
+/**
+ * 指定 phantomjs 的 Cookies 文件路径。使用 Cookies 之后，除了第一次抓取动漫花园的网页需要等待 CloudFare 的 DDoS 载入页面，以后都不再需要等待了。这可以加快抓取速度。
+ */
+$PHANTOMJS_COOKIES = '/tmp/rssindexer_phantomjs_cookies';
+
+/**
+ * 指定 phantomjs 的文件缓存路径，这样可以将网页的静态文件保存在本地中，加快网页载入速度。
+ */
+$PHANTOMJS_DISK_CACHE = '/tmp/rssindexer_phantomjs_disk_cache';
+?
 ?>
