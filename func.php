@@ -1052,7 +1052,9 @@ function webkit_fetch_url($url, $keyword = '', $timeout = 30) {
     $cmd .= ' --cookies-file=' . escapeshellarg($PHANTOMJS_COOKIES);
     $cmd .= ' --disk-cache-path=' . escapeshellarg($PHANTOMJS_DISK_CACHE);
     $cmd .= ' --disk-cache=true';
-    $cmd .= ' --load-images=false';
+    $cmd .= ' --load-images=false';                 /// 不加载网页图片
+    $cmd .= ' --local-url-access=false';            /// 禁止访问本地文件(file:///)
+    $cmd .= ' --max-disk-cache-size=10240';         /// 限制本地缓存文件空间为 10M
     $cmd .= ' ' . escapeshellarg($webkit_crawl);
     $cmd .= ' ' . escapeshellarg($url);
     $cmd .= ' ' . escapeshellarg($keyword);
