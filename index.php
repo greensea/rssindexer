@@ -9,7 +9,7 @@ $kw = str_replace('　', ' ', $kw);
 $kw = trim($kw);
 
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
-$page = max($page, 1);
+$page = (int)max($page, 1);
 
 $result = search($kw, ($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
 
