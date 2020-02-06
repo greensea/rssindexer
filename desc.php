@@ -5,7 +5,7 @@
 require_once('header.php');
 
 /// CSP 控制，避免 desc 中带有恶意代码
-header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' cdn.bootcss.com cdnjs.cloudflare.com; font-src cdn.bootcss.com cdnjs.cloudflare.com; img-src *; media-src *; script-src 'self' cdn.bootcss.com hm.baidu.com www.google-analytics.com cdnjs.cloudflare.com 'nonce-{$CSP_NONCE}'");
+header("Content-Security-Policy: default-src 'self' www.google.com www.gstatic.com; style-src 'self' 'unsafe-inline' cdn.bootcss.com cdnjs.cloudflare.com; font-src cdn.bootcss.com cdnjs.cloudflare.com; img-src *; media-src *; script-src 'self' cdn.bootcss.com hm.baidu.com www.google-analytics.com cdnjs.cloudflare.com www.google.com www.gstatic.com 'nonce-{$CSP_NONCE}'");
 
 /// 获取资源
 $btih = isset($_GET['btih']) ? $_GET['btih'] : '';

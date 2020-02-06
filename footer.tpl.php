@@ -14,7 +14,7 @@
         </div>
         
         <script src="https://www.google.com/recaptcha/api.js?render=<?php echo $RECAPTCHA_CLIENT_KEY;?>"></script>
-        <script>
+        <script nonce="<?php echo $CSP_NONCE;?>">
         window.kotomirss_recaptcha_key = "<?php echo $RECAPTCHA_CLIENT_KEY;?>";
         </script>
         <style type="text/css">
