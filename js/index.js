@@ -89,7 +89,7 @@ function renderLikeIcon() {
 function getUserIdentity(cb) {
     var id = null;
     
-    id = window.localStorage.getItem("user_identity");
+    id = $.fn.cookie("user_identity");
     
     if (id) {
         console.log("在本地找到了 user_identity", id);
@@ -112,7 +112,7 @@ function getUserIdentity(cb) {
                 success: function (d) {
                     if (d.code == 0) {
                         console.log("得到一个 user_identity", d.data.user_identity);
-                        window.localStorage.setItem("user_identity", d.data.user_identity);
+                        $.fn.cookie("user_identity", d.data.user_identity, {expires: 365});
                         cb(d.data.user_identity);
                     }
                 }
