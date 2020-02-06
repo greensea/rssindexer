@@ -107,3 +107,47 @@ table.popular-kw-list {
 table.popular-kw-list td {
     text-align: center;
 }
+
+.like-icon {
+    margin-top: -1em;
+}
+.like-icon .icon {
+    background: url("/img/web_heart_animation.png");
+    background-position: left;
+    background-repeat: no-repeat;
+    height: 50px;
+    width: 50px;
+    cursor: pointer;
+    background-size: 1450px;
+    position: absolute;
+}/*
+.like-icon .icon:hover {
+    background-position: right; 
+}*/
+.like-icon .count {
+    margin-top: 11px;
+    margin-left: 34px;
+}
+
+@-webkit-keyframes heartBlast {
+  0% {background-position: left;}
+  100% {background-position: right;}
+}
+ 
+@keyframes heartBlast {
+  0% {background-position: left;}
+  100% {background-position: right;}
+}
+ 
+.heartAnimation {
+  -webkit-animation-name: heartBlast; //webkit内核浏览器
+  animation-name: heartBlast;
+  -webkit-animation-duration: .8s;
+  animation-duration: .8s;
+  -webkit-animation-iteration-count: 1;
+  animation-iteration-count: 1;
+  -webkit-animation-timing-function: steps(28); //共28个背景图片帧
+  animation-timing-function: steps(28);
+  background-position: right !important;
+}           
+

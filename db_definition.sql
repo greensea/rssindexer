@@ -74,7 +74,8 @@ CREATE TABLE `b_resource` (
   `pubDate` int(11) NOT NULL,
   `ctime` int(11) NOT NULL,
   `popularity` float NOT NULL DEFAULT '-1' COMMENT '热门程度缓存',
-  `pmtime` int(11) NOT NULL DEFAULT '0'
+  `pmtime` int(11) NOT NULL DEFAULT '0',
+  `vote_score` int(11) NOT NULL DEFAULT '0' COMMENT '投票得分'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --

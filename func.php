@@ -841,6 +841,62 @@ function update_kw_popularity($kw, $ts) {
 }
 
 
+/**
+ * 对资源进行一个投票
+ */
+function resource_vote($resource_id, $user_identity, $recaptcha_score) {
+    $sql = sprintf("INSERT IGNORE INTO b_vote (recaptcha_score, resource_id, create_time, user_identity) VALUES (%s, %s, %d, '%s')", 
+                    (float)$recaptcha_score, (int)$resource_id, (int)time(), db_escape($user_identity));
+    db_query($sql);
+
+    resource_update_vote_count($resource_id);
+    
+    return true;
+}
+
+
+
+/**
+ * 取消对资源的一个投票
+ */
+function resource_unvote($resource_id, $user_identity) {
+    $sql = sprintf("UPDATE b_vote SET delete_time=%d WHERE resource_id=%d AND user_identity='%s' AND delete_time=0", 
+                    (int)time(), (int)$resource_id, db_escape($user_identity));
+    db_query($sql);
+    
+    //var_dump($sql);
+    
+    resource_update_vote_count($resource_id);
+    
+    return true;
+}
+
+
+function resource_update_vote_count($resource_id) {
+    $sql = sprintf('UPDATE b_resource SET vote_score=(SELECT COUNT(*) FROM b_vote WHERE resource_id=%1$d AND delete_time = 0 AND recaptcha_score>=0.5) WHERE resource_id=%1$d',
+                (int)$resource_id);
+    db_query($sql);
+    
+    return true;
+}
+
+function get_by_resource_id($resource_id) {
+    global $mysqli;
+    
+    $btih_qs = $mysqli->real_escape_string($resource_id);
+    $sql = sprintf("SELECT * FROM b_resource WHERE resource_id=%d", (int)$resource_id);
+    
+    $result = $mysqli->query($sql);
+    
+    if (!$result) {
+        LOGE($mysqli->error);
+        return FALSE;
+    }
+    else {
+        return $result->fetch_assoc();
+    }
+}
+
 
 /**
  * 重新（初始化）计算一个资源的热度
@@ -1115,6 +1171,79 @@ function webkit_fetch_url($url, $keyword = '', $timeout = 30) {
 }
 
 
+
+
+function user_identity_new() {
+    global $USER_IDENTITY_KEY;
+    
+    $user_identity = '';
+    while (strlen($user_identity) < 24) {
+        $user_identity .= base64_encode(random_bytes(32));
+        $user_identity = str_replace('=', '', $user_identity);
+        $user_identity = str_replace('/', '', $user_identity);
+        $user_identity = str_replace('+', '', $user_identity);
+    }
+    $user_identity = substr($user_identity, 0, 24);
+    
+    $hash = hash_hmac('sha256', $user_identity, $USER_IDENTITY_KEY);
+    $hash = substr($hash, 0, 11);
+    $hash = gmp_strval(gmp_init($hash, 16), 62);
+        
+    return $user_identity . $hash;
+}
+
+function user_identity_verify($id) {
+    global $USER_IDENTITY_KEY;
+    
+    $prefix = substr($id, 0, 24);
+    $our_hash = hash_hmac('sha256', $prefix, $USER_IDENTITY_KEY);
+    $our_hash = substr($our_hash, 0, 11);
+    $our_hash = gmp_strval(gmp_init($our_hash, 16), 62);
+    
+    $input_hash = substr($id, 24);
+    
+    return ($our_hash == $input_hash);
+}
+
+
+/**
+ * 传入一个 google recaptcha token，返回得分
+ */
+function recaptcha_verify($token, &$err = '') {
+    global $RECAPTCHA_SERVER_KEY;
+        
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL => 'https://www.google.com/recaptcha/api/siteverify',
+        CURLOPT_POSTFIELDS => [
+            'secret' => $RECAPTCHA_SERVER_KEY,
+            'response' => $token,
+        ],
+        CURLOPT_RETURNTRANSFER => true,
+    ]);
+    
+    $raw = curl_exec($ch);
+    
+    if (!$raw) {
+        $err = curl_error($ch);
+        return false;
+    }
+    
+    $j = json_decode($raw, true);
+    if (!$j) {
+        $err = json_last_error_msg();
+        return false;
+    }
+    
+    if ($j['success']) {
+        return $j['score'];
+    } else {
+        $err = json_encode($j['error-codes']);
+        return false;
+    }
+}
+
+
 function apiout($code, $message = NULL, $data = NULL) {
     header('Content-Type: application/json');
     
@@ -1135,3 +1264,5 @@ function apiout($code, $message = NULL, $data = NULL) {
 }
 
 ?>
+
+

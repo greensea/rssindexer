@@ -31,7 +31,7 @@ if (!isset($_GET['page']) && isset($_GET['kw'])) {
     <link href="css/index.css" rel="stylesheet">
     
     <link rel="alternate" type="application/rss+xml" title="KOTOMI RSS 页面" href="//moe4sale.in/rss.xml" />
-    <script type="text/javascript" src="js/sprint.min.js" async defer></script>
+    <script type="text/javascript" src="js/zepto.min.js" async defer></script>
     <script type="text/javascript" src="js/index.js" async defer></script>
   </head>
   <body>
@@ -135,6 +135,11 @@ if (!isset($_GET['page']) && isset($_GET['kw'])) {
                 <?php else: ?>
                     <?php echo htmlspecialchars($res['title']);?>
                 <?php endif;?>
+                
+                <div class="like-icon" id="like-icon-<?php printf("%d", $res['resource_id']);?>" style="float: right;">
+                    <div class="icon" rel="like" data-id="<?php printf("%d", $res['resource_id']);?>"></div>
+                    <div class="count"><?php printf("%d", $res['vote_score']);?></div>
+                </div>
             </td>
             
             <td class="popularity"><?php echo $popularity;?></td>
