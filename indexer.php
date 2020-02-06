@@ -13,8 +13,8 @@ require_once('indexer_dmhy.php');
 
 /// 载入索引器
 $indexers = array(
-    'popgo' => new Indexer_Popgo(),
     'dmhy' => new Indexer_DMHY(),
+    'popgo' => new Indexer_Popgo(),
 );
 
 
