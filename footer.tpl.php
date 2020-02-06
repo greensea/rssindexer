@@ -33,6 +33,13 @@
         </div>
     </div>
 
+
+    <script type="text/javascript" src="/js/zepto.min.js"></script>
+    <script type="text/javascript" src="/js/zepto.cookie.min.js" ></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    
+    
+
     <?php
     if ($BAIDU_STAT_ID != '') {
         if (!$CSP_NONCE) {
