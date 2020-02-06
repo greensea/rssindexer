@@ -13,6 +13,8 @@ $page = (int)max($page, 1);
 
 $result = search($kw, ($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
 
+$voted_ids = get_voted_ids(array_column($result, 'resource_id'), $_COOKIE['user_identity'] ?? '');
+
 
 /// 如果没有传入 page 参数但传入了 kw 参数，则说明这是一次搜索
 if (!isset($_GET['page']) && isset($_GET['kw'])) {
@@ -31,7 +33,8 @@ if (!isset($_GET['page']) && isset($_GET['kw'])) {
     <link href="css/index.css" rel="stylesheet">
     
     <link rel="alternate" type="application/rss+xml" title="KOTOMI RSS 页面" href="//moe4sale.in/rss.xml" />
-    <script type="text/javascript" src="js/sprint.min.js" async defer></script>
+    <script type="text/javascript" src="js/zepto.min.js" async defer></script>
+    <script type="text/javascript" src="js/zepto.cookie.min.js" async defer></script>
     <script type="text/javascript" src="js/index.js" async defer></script>
   </head>
   <body>
@@ -124,6 +127,13 @@ if (!isset($_GET['page']) && isset($_GET['kw'])) {
             $popularity = $res['popularity'] * pow(2, -1 * $decays);
             $popularity = round($popularity);
         }
+        
+        $voted_rel = "like";
+        $voted_class = "";
+        if (in_array($res['resource_id'], $voted_ids)) {
+            $voted_rel = "like";
+            $voted_class = "heartAnimation";
+        }
     ?>
         <tr>
             <td class="pubDate"><?php echo date('Y-m-d H:i:s', $res['pubDate']);?></td>
@@ -135,6 +145,11 @@ if (!isset($_GET['page']) && isset($_GET['kw'])) {
                 <?php else: ?>
                     <?php echo htmlspecialchars($res['title']);?>
                 <?php endif;?>
+                
+                <div class="like-icon" id="like-icon-<?php printf("%d", $res['resource_id']);?>" style="float: right;">
+                    <div class="icon <?php echo $voted_class;?>" rel="<?php echo $voted_rel;?>" data-id="<?php printf("%d", $res['resource_id']);?>"></div>
+                    <div class="count"><?php printf("%d", $res['vote_score']);?></div>
+                </div>
             </td>
             
             <td class="popularity"><?php echo $popularity;?></td>

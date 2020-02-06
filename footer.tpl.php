@@ -7,6 +7,23 @@
         本站由这些<del>赞助商</del>有爱人士提供支援：
         <a href="https://m-b.science/">麻痹科学网</a>
         </div>
+        
+        
+        <div class="row">
+            本站由 reCAPTCHA 提供保护，并遵守相关的谷歌<a href="https://policies.google.com/privacy" rel="nofollow">隐私政策</a>和<a href="https://policies.google.com/terms" rel="nofollow">使用条款</a>
+        </div>
+        
+        <script src="https://www.google.com/recaptcha/api.js?render=<?php echo $RECAPTCHA_CLIENT_KEY;?>"></script>
+        <script>
+        window.kotomirss_recaptcha_key = "<?php echo $RECAPTCHA_CLIENT_KEY;?>";
+        </script>
+        <style type="text/css">
+        .grecaptcha-badge { 
+            visibility: hidden;
+        }
+        </style>
+        
+        
     </div>
 
     <div class="container-fluid footer">

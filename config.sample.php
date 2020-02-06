@@ -29,6 +29,19 @@ $GOOGLE_ANALYTICS_ID = ''; /// 谷歌分析的跟踪 ID，如果没有请留空
 
 $BAIDU_STAT_ID = '';    /// 百度网站统计的账号，如果没有请留空
 
+
+/**
+ * 投票功能依赖 google reCAPTCHA，此处设置 reCAPTCHA 的密钥
+ */
+$RECAPTCHA_CLIENT_KEY = '';
+$RECAPTCHA_SERVER_KEY = '';
+
+/**
+ * 用于生成用户标识的密钥
+ */
+$USRE_IDENTITY_KEY = '';
+
+
 /**
  * 种子下载链接是否使用本站地址。如果 TRUE 则提供本站的种子下载链接，如果 FALSE 则提供漫游的种子下载地址。
  * 该参数最好在部署到生产环境前确定，部署到生产环境后尽量不要修改。一旦修改改参数，RSS 输出中的种子链接就会改变，这会导致用户的订阅客户端重新下载以前已经下载过的种子。
