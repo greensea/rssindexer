@@ -880,6 +880,34 @@ function resource_update_vote_count($resource_id) {
     return true;
 }
 
+
+/**
+ * 给出一系列资源编号，返回已经投票了的资源编号列表
+ */
+function get_voted_ids(array $resource_ids, string $user_identity) {
+    foreach ($resource_ids as $k => $v) {
+        $resource_ids[$k] = (int)$v;
+    }
+    
+    $sql = sprintf("SELECT * FROM b_vote WHERE delete_time=0 AND user_identity='%s' AND resource_id IN (%s)",
+            db_escape($user_identity), implode(',', $resource_ids));
+    
+    $res = db_query($sql);
+    if (!$res) {
+        die("SQL 查询失败: {$sql}");
+    }
+    
+    $rows = $res->fetch_all(MYSQLI_ASSOC);
+    if (!$rows) {
+        $rows = [];
+    }
+    
+    $ids = array_column($rows, 'resource_id');
+    
+    return $ids;
+}
+
+
 function get_by_resource_id($resource_id) {
     global $mysqli;
     
@@ -896,6 +924,9 @@ function get_by_resource_id($resource_id) {
         return $result->fetch_assoc();
     }
 }
+
+
+
 
 
 /**
