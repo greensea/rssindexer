@@ -888,7 +888,11 @@ function get_voted_ids(array $resource_ids, string $user_identity) {
     foreach ($resource_ids as $k => $v) {
         $resource_ids[$k] = (int)$v;
     }
-    
+
+    if (empty($resource_ids)) {
+	    return [];
+    }
+
     $sql = sprintf("SELECT * FROM b_vote WHERE delete_time=0 AND user_identity='%s' AND resource_id IN (%s)",
             db_escape($user_identity), implode(',', $resource_ids));
     
