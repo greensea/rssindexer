@@ -1,4 +1,5 @@
 <?php
+ob_start();
 require_once('header.php');
 
 $kw = isset($_GET['kw']) ? $_GET['kw'] : '';
@@ -20,6 +21,7 @@ $title = htmlspecialchars($title);
 $date = date(DATE_RSS);
 
 header('Content-Type: text/xml');
+ob_clean();
 
 echo <<<EOF
 <?xml version="1.0" encoding="UTF-8" ?>
