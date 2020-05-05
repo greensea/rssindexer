@@ -6,7 +6,8 @@ require_once('header.php');
 
 
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
-$page = max($page, 1);
+$page = (int)max($page, 1);
+$cnt = 0;
 
 $result = get_popular_resources(($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
 
