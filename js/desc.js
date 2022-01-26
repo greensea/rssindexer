@@ -9,7 +9,7 @@ $(document).ready(function() {
         
         success: function(d) {
             if (d.code != 0) {
-                console.log(d.message);
+                console.log("无法加载文件列表", d)
                 
                 $(".files-loading").text("无法加载文件列表：" + d.message);
                 $(".files-loading").addClass("text-danger");
@@ -35,6 +35,9 @@ $(document).ready(function() {
             
             var tip = $("<div>").addClass("tip").html("共<strong>" + d.data.files.length + "</strong>个文件，总大小<strong>" + size2readable(totalSize) + "</strong>");
             $(".files").append(tip);
+        },
+        error: function (x, e, s) {
+            console.log("加载文件列表遇到了网络错误", x, e, s)
         }
     });
 });
