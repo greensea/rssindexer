@@ -4,7 +4,8 @@ require_once('lib/base32.php');
 require_once('func.php');
 
 class Indexer_DMHY Extends Indexer_Base {
-    protected $FEED_URL = 'https://share.dmhy.org/topics/rss/rss.xml';
+//    protected $FEED_URL = 'https://share.dmhy.org/topics/rss/rss.xml';
+    protected $FEED_URL = 'https://share.dmhy.org/topics/rss/recent/1+week/rss.xml';
     
     public function fetch() {
         $rs = $this->_fetch();
