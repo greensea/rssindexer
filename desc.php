@@ -14,7 +14,8 @@ $btih_qs = $mysqli->real_escape_string($btih);
 $result = $mysqli->query("SELECT * FROM b_resource WHERE btih='{$btih_qs}'");
 
 if (!$result) {
-    die($mysqli->error());
+	printf("error\n");
+    die($mysqli->error);
 }
 $res = $result->fetch_assoc();
 if (!$res) {
