@@ -5,7 +5,7 @@
 require_once('header.php');
 
 
-$page = isset($_GET['page']) ? $_GET['page'] : 1;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $page = max($page, 1);
 
 $result = get_popular_kws(($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
