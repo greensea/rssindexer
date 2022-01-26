@@ -43,7 +43,7 @@ foreach ($indexers as $src => $indexer) {
         $result = $mysqli->query($sql);
         
         if (!$result) {
-            LOGE("数据库查询失败: " . $mysqli->error);
+            LOGE(sprintf("数据库查询失败: (%d) %s", $mysqli->errno, $mysqli->error));
             continue;
         }
         
