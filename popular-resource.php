@@ -19,7 +19,7 @@ $result = get_popular_resources(($page - 1) * $PAGE_SIZE, $PAGE_SIZE, $cnt);
     <title>热门资源排行 - KOTOMI RSS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <link href="//cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/index.css" rel="stylesheet">
     
   </head>

@@ -38,7 +38,7 @@ $tip = array_pop($TIPS);
     <title><?php echo htmlspecialchars($res['title']);?> - KOTOMI RSS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/index.css" rel="stylesheet">
     
     <script type="text/javascript" src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
