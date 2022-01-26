@@ -8,7 +8,7 @@
         <a href="https://m-b.science/">麻痹科学网</a>
         </div>
         
-        
+    <script src="//instant.page/5.1.0" type="module" integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>    
         <div class="row">
             本站由 reCAPTCHA 提供保护，并遵守相关的谷歌<a href="https://policies.google.com/privacy" rel="nofollow">隐私政策</a>和<a href="https://policies.google.com/terms" rel="nofollow">使用条款</a>
         </div>
@@ -30,7 +30,7 @@
         <div class="col-sm-12 text-center text-muted">
             <span>页面执行时间：<span class="text-info"><?php printf('%0.3f', 1000 * (microtime(TRUE) - $__t1));?>ms</span></span>
             <span>全文索引：<?php echo $USE_FULLTEXT ? '<span class="text-success">已启用</span>' : '未启用';?></span>
-        </div>
+		</div>
     </div>
 
 
