@@ -209,7 +209,7 @@ function search($kw, $offset = 0, $limit = 100, &$count = '__DO_NOT_COUNT__') {
     $sql = "SELECT * FROM b_resource {$where} ORDER BY pubDate DESC LIMIT {$offset},${limit}";
     $result = $mysqli->query($sql);
     if (!$result) {
-        LOGE($mysqli->error);
+		LOGE($mysqli->error);
         die();
     }
     
