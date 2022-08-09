@@ -80,12 +80,14 @@ foreach ($result as $res) {
         $res[$k] = htmlspecialchars($v);        
     }
     $link = htmlspecialchars($link);
-    $guid = htmlspecialchars($guid);
+	$guid = htmlspecialchars($guid);
+	$pubdate = date(DATE_RFC822, $res['pubDate']);
     
     /// 输出
     echo <<<EOF
         <item>
-            <title>{$res['title']}</title>
+			<title>{$res['title']}</title>
+			<pubDate>$pubdate</pubDate>
             <guid isPermaLink="false">$guid</guid>
             <link>{$res['link']}</link>
             <enclosure url="{$link}" type="application/x-bittorrent" />
