@@ -57,7 +57,7 @@ foreach ($indexers as $src => $indexer) {
         LOGI("保存来自 {$src} 的数据：{$res['title']}");
         
         $sql = "INSERT INTO b_resource(title, guid, link, description, btih, pubDate, src, magnet, ctime)
-                VALUES('${title}', '${guid}', '{$link}', '{$description}', '{$btih}', ${pubDate}, '{$src}', '{$magnet}', ${ctime})";
+				VALUES('${title}', '${guid}', '{$link}', '{$description}', '{$btih}', ${pubDate}, '{$src}', '{$magnet}', ${ctime})";
         $ret = $mysqli->query($sql);
         if ($ret === FALSE) {
             LOGE("无法保存数据: " . $mysqli->error . "，原 SQL: " . $sql);
