@@ -37,8 +37,8 @@ $tip = array_pop($TIPS);
     <meta charset="utf-8">
     <title><?php echo htmlspecialchars($res['title']);?> - KOTOMI RSS</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<script>
+ 
+<script nonce="<?php echo $CSP_NONCE;?>">
 var _rollbarConfig = {
     accessToken: 'a760a50ec19d4be180dd19fb98ea089d',
     captureUncaught: true,
@@ -61,10 +61,10 @@ var _rollbarConfig = {
 // End Rollbar Snippet
 </script>
     
-    <link href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/index.css" rel="stylesheet">
     
-    <script src="//cdn.bootcdn.net/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+    <script src="js/jquery-2.2.1.min.js"></script>
     
     <link rel="alternate" type="application/rss+xml" title="KOTOMI RSS 页面" href="//moe4sale.in/rss.xml" />
   </head>
