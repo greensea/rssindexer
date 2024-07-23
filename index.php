@@ -29,7 +29,8 @@ if (!isset($_GET['page']) && isset($_GET['kw'])) {
     <title>KOTOMI RSS - Anime RSS 索引站</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <link href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+<!--    <link href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">-->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/index.css" rel="stylesheet">
     
     <link rel="alternate" type="application/rss+xml" title="KOTOMI RSS 页面" href="//moe4sale.in/rss.xml" />
