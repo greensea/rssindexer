@@ -37,7 +37,9 @@ $(document).ready(function() {
             $(".files").append(tip);
         },
         error: function (x, e, s) {
+            
             console.log("加载文件列表遇到了网络错误", x, e, s)
+            $(".files-loading").text("加载文件列表失败");
         }
     });
 });
